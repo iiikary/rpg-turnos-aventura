@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crónicas del Reino Olvidado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- PANTALLA DE CARGA -->
+<div id="loading-screen">
+    <div class="loading-content">
+        <div class="rune-circle"><div class="rune">⚔</div></div>
+        <h1 class="game-title">Crónicas del<br><span>Reino Olvidado</span></h1>
+        <div class="loading-bar"><div class="loading-fill"></div></div>
+        <p class="loading-text">Despertando el reino...</p>
+    </div>
+</div>
+
+<!-- MENÚ PRINCIPAL -->
+<div id="main-menu" class="hidden">
+    <div class="menu-bg">
+        <div class="particles" id="particles"></div>
+        <div class="menu-overlay"></div>
+    </div>
+    <div class="menu-content">
+        <div class="title-block">
+            <div class="crown-icon">♛</div>
+            <h1 class="main-title">Crónicas del<br><span>Reino Olvidado</span></h1>
+            <p class="subtitle">Un mundo de magia, honor y peligro te aguarda</p>
+        </div>
+        <div class="menu-buttons">
+            <button class="btn-menu btn-primary" onclick="showScreen('character-select')">
+                <span class="btn-icon">⚔</span> Nueva Partida
+            </button>
+            <button class="btn-menu btn-secondary" onclick="loadGame()" id="btn-continue">
+                <span class="btn-icon">📜</span> Continuar
+            </button>
+            <button class="btn-menu btn-tertiary" onclick="showScreen('credits')">
+                <span class="btn-icon">✦</span> Créditos
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- SELECCIÓN DE PERSONAJE -->
+<div id="character-select" class="hidden screen-dark">
+    <div class="screen-header">
+        <button class="btn-back" onclick="showScreen('main-menu')">← Volver</button>
+        <h2 class="screen-title">Elige tu Destino</h2>
+        <p class="screen-sub">Cada camino conduce a glorias distintas</p>
+    </div>
+    <div class="name-input-row">
+        <label>Nombre del Héroe:</label>
+        <input type="text" id="hero-name" placeholder="Escribe tu nombre..." maxlength="20">
+    </div>
+    <div class="classes-grid">
+        <div class="class-card" onclick="selectClass('guerrero')" data-class="guerrero">
+            <div class="class-art">🛡️</div>
+            <div class="class-glow guerrero-glow"></div>
+            <h3>Guerrero</h3>
+            <p class="class-desc">Maestro del combate cuerpo a cuerpo. Alta defensa y fuerza devastadora.</p>
+            <div class="class-stats">
+                <div class="stat-bar"><span>VID</span><div class="bar"><div style="width:90%" class="bar-hp"></div></div></div>
+                <div class="stat-bar"><span>FUE</span><div class="bar"><div style="width:85%" class="bar-str"></div></div></div>
+                <div class="stat-bar"><span>MAG</span><div class="bar"><div style="width:20%" class="bar-mag"></div></div></div>
+                <div class="stat-bar"><span>AGI</span><div class="bar"><div style="width:50%" class="bar-agi"></div></div></div>
+            </div>
+            <div class="class-skills"><span>Golpe Brutal</span><span>Escudo Férreo</span><span>Furia Berserker</span></div>
+        </div>
+        <div class="class-card" onclick="selectClass('mago')" data-class="mago">
+            <div class="class-art">🔮</div>
+            <div class="class-glow mago-glow"></div>
+            <h3>Mago</h3>
+            <p class="class-desc">Domina los arcanos secretos. Magia poderosa pero cuerpo frágil.</p>
+            <div class="class-stats">
+                <div class="stat-bar"><span>VID</span><div class="bar"><div style="width:45%" class="bar-hp"></div></div></div>
+                <div class="stat-bar"><span>FUE</span><div class="bar"><div style="width:25%" class="bar-str"></div></div></div>
+                <div class="stat-bar"><span>MAG</span><div class="bar"><div style="width:95%" class="bar-mag"></div></div></div>
+                <div class="stat-bar"><span>AGI</span><div class="bar"><div style="width:60%" class="bar-agi"></div></div></div>
+            </div>
+            <div class="class-skills"><span>Bola de Fuego</span><span>Rayo Arcano</span><span>Tormenta Mágica</span></div>
+        </div>
+        <div class="class-card" onclick="selectClass('arquero')" data-class="arquero">
+            <div class="class-art">🏹</div>
+            <div class="class-glow arquero-glow"></div>
+            <h3>Arquero</h3>
+            <p class="class-desc">Velocidad y precisión mortal. Ataca antes que el enemigo reaccione.</p>
+            <div class="class-stats">
+                <div class="stat-bar"><span>VID</span><div class="bar"><div style="width:60%" class="bar-hp"></div></div></div>
+                <div class="stat-bar"><span>FUE</span><div class="bar"><div style="width:65%" class="bar-str"></div></div></div>
+                <div class="stat-bar"><span>MAG</span><div class="bar"><div style="width:30%" class="bar-mag"></div></div></div>
+                <div class="stat-bar"><span>AGI</span><div class="bar"><div style="width:95%" class="bar-agi"></div></div></div>
+            </div>
+            <div class="class-skills"><span>Flecha Certera</span><span>Lluvia de Flechas</span><span>Tiro Crítico</span></div>
+        </div>
+        <div class="class-card" onclick="selectClass('paladin')" data-class="paladin">
+            <div class="class-art">✨</div>
+            <div class="class-glow paladin-glow"></div>
+            <h3>Paladín</h3>
+            <p class="class-desc">Guerrero sagrado. Une fuerza divina con poder de curación.</p>
+            <div class="class-stats">
+                <div class="stat-bar"><span>VID</span><div class="bar"><div style="width:80%" class="bar-hp"></div></div></div>
+                <div class="stat-bar"><span>FUE</span><div class="bar"><div style="width:70%" class="bar-str"></div></div></div>
+                <div class="stat-bar"><span>MAG</span><div class="bar"><div style="width:65%" class="bar-mag"></div></div></div>
+                <div class="stat-bar"><span>AGI</span><div class="bar"><div style="width:45%" class="bar-agi"></div></div></div>
+            </div>
+            <div class="class-skills"><span>Golpe Sagrado</span><span>Luz Divina</span><span>Aura Bendita</span></div>
+        </div>
+        <div class="class-card" onclick="selectClass('nigromante')" data-class="nigromante">
+            <div class="class-art">💀</div>
+            <div class="class-glow nigromante-glow"></div>
+            <h3>Nigromante</h3>
+            <p class="class-desc">Señor de la muerte. Drena vida y convoca aliados del más allá.</p>
+            <div class="class-stats">
+                <div class="stat-bar"><span>VID</span><div class="bar"><div style="width:55%" class="bar-hp"></div></div></div>
+                <div class="stat-bar"><span>FUE</span><div class="bar"><div style="width:40%" class="bar-str"></div></div></div>
+                <div class="stat-bar"><span>MAG</span><div class="bar"><div style="width:88%" class="bar-mag"></div></div></div>
+                <div class="stat-bar"><span>AGI</span><div class="bar"><div style="width:55%" class="bar-agi"></div></div></div>
+            </div>
+            <div class="class-skills"><span>Drenar Vida</span><span>Maldición</span><span>Ejército Muerto</span></div>
+        </div>
+        <div class="class-card" onclick="selectClass('asesino')" data-class="asesino">
+            <div class="class-art">🗡️</div>
+            <div class="class-glow asesino-glow"></div>
+            <h3>Asesino</h3>
+            <p class="class-desc">Experto en sombras. Golpes críticos devastadores desde el sigilo.</p>
+            <div class="class-stats">
+                <div class="stat-bar"><span>VID</span><div class="bar"><div style="width:50%" class="bar-hp"></div></div></div>
+                <div class="stat-bar"><span>FUE</span><div class="bar"><div style="width:80%" class="bar-str"></div></div></div>
+                <div class="stat-bar"><span>MAG</span><div class="bar"><div style="width:35%" class="bar-mag"></div></div></div>
+                <div class="stat-bar"><span>AGI</span><div class="bar"><div style="width:90%" class="bar-agi"></div></div></div>
+            </div>
+            <div class="class-skills"><span>Apuñalar</span><span>Veneno</span><span>Golpe Letal</span></div>
+        </div>
+    </div>
+    <div class="select-confirm hidden" id="confirm-block">
+        <button class="btn-confirm" onclick="startGame()">⚔ Comenzar Aventura ⚔</button>
+    </div>
+</div>
+
+<!-- MUNDO PRINCIPAL -->
+<div id="game-world" class="hidden">
+    <div class="hud-top">
+        <div class="hud-hero-info">
+            <div class="hud-avatar" id="hud-avatar">🛡️</div>
+            <div class="hud-stats">
+                <div class="hud-name" id="hud-name">Héroe</div>
+                <div class="hud-level">Nivel <span id="hud-level">1</span> | <span id="hud-class">Guerrero</span></div>
+                <div class="hud-bars">
+                    <div class="hud-bar-row"><span class="bar-label hp-label">❤</span><div class="hud-bar-bg"><div class="hud-bar-fill hp-fill" id="hp-bar"></div></div><span class="bar-val" id="hp-val">100/100</span></div>
+                    <div class="hud-bar-row"><span class="bar-label mp-label">✦</span><div class="hud-bar-bg"><div class="hud-bar-fill mp-fill" id="mp-bar"></div></div><span class="bar-val" id="mp-val">50/50</span></div>
+                    <div class="hud-bar-row"><span class="bar-label xp-label">★</span><div class="hud-bar-bg"><div class="hud-bar-fill xp-fill" id="xp-bar"></div></div><span class="bar-val" id="xp-val">0/100</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="hud-gold"><span class="gold-icon">🪙</span><span id="gold-val">0</span> oro</div>
+        <div class="hud-actions">
+            <button class="hud-btn" onclick="showScreen('inventory');renderInventory()">🎒 Inventario</button>
+            <button class="hud-btn" onclick="saveGame()">💾 Guardar</button>
+        </div>
+    </div>
+    <div class="world-map">
+        <div class="map-title">🗺 El Reino de Valdoria</div>
+        <div class="map-container">
+            <div class="map-bg"></div>
+            <div class="region region-village active-region" onclick="enterZone('aldea')" style="top:60%;left:45%">
+                <div class="region-icon">🏘️</div><div class="region-name">Aldea de Comienzo</div><div class="region-level">Nivel 1-3</div>
+            </div>
+            <div class="region" onclick="enterZone('bosque')" style="top:40%;left:25%" id="zone-bosque">
+                <div class="region-icon">🌲</div><div class="region-name">Bosque Oscuro</div><div class="region-level">Nivel 2-5</div>
+            </div>
+            <div class="region region-locked" onclick="enterZone('minas')" style="top:35%;left:60%" id="zone-minas">
+                <div class="region-icon">⛏️</div><div class="region-name">Minas Malditas</div><div class="region-level">Nivel 4-8</div><div class="lock-icon">🔒</div>
+            </div>
+            <div class="region region-locked" onclick="enterZone('castillo')" style="top:20%;left:45%" id="zone-castillo">
+                <div class="region-icon">🏰</div><div class="region-name">Castillo del Rey</div><div class="region-level">Nivel 7-12</div><div class="lock-icon">🔒</div>
+            </div>
+            <div class="region region-locked" onclick="enterZone('volcan')" style="top:15%;left:20%" id="zone-volcan">
+                <div class="region-icon">🌋</div><div class="region-name">Volcán Eterno</div><div class="region-level">Nivel 10-15</div><div class="lock-icon">🔒</div>
+            </div>
+            <div class="region region-locked" onclick="enterZone('abismo')" style="top:10%;left:70%" id="zone-abismo">
+                <div class="region-icon">🕳️</div><div class="region-name">El Abismo Final</div><div class="region-level">Nivel 15-20</div><div class="lock-icon">🔒</div>
+            </div>
+        </div>
+    </div>
+    <div class="quest-panel">
+        <h3>📜 Misiones Activas</h3>
+        <div id="quest-list"></div>
+        <div class="quest-log-btn"><button class="btn-small" onclick="showQuestLog()">Ver todas</button></div>
+    </div>
+</div>
+
+<!-- ZONA -->
+<div id="zone-screen" class="hidden">
+    <div class="zone-header">
+        <button class="btn-back" onclick="showScreen('game-world')">← Mapa</button>
+        <h2 id="zone-title">Zona</h2>
+        <p id="zone-desc">Descripción...</p>
+    </div>
+    <div class="zone-content">
+        <div class="zone-illustration" id="zone-art">🌲</div>
+        <div class="zone-actions">
+            <button class="zone-btn" onclick="startBattle()">⚔ Explorar y Combatir</button>
+            <button class="zone-btn" onclick="showNPC()">💬 Hablar con NPC</button>
+            <button class="zone-btn secondary" onclick="showScreen('game-world')">🗺 Volver al Mapa</button>
+        </div>
+        <div class="zone-enemies"><h4>Enemigos en esta zona:</h4><div id="zone-enemy-list"></div></div>
+    </div>
+</div>
+
+<!-- COMBATE -->
+<div id="battle-screen" class="hidden">
+    <div class="battle-arena">
+        <div class="battle-bg" id="battle-bg"></div>
+        <div class="enemy-area">
+            <div class="enemy-info">
+                <div class="enemy-name" id="enemy-name">Enemigo</div>
+                <div class="enemy-level-badge">Nv. <span id="enemy-level">1</span></div>
+                <div class="enemy-hp-bar-container"><div class="enemy-hp-bar" id="enemy-hp-bar"></div></div>
+                <div class="enemy-hp-text" id="enemy-hp-text">50/50</div>
+            </div>
+            <div class="enemy-sprite" id="enemy-sprite">🐺</div>
+            <div class="battle-effects" id="battle-effects"></div>
+        </div>
+        <div class="battle-log" id="battle-log"><p class="log-entry">¡El combate comienza!</p></div>
+        <div class="hero-area">
+            <div class="hero-sprite" id="hero-sprite-battle">🛡️</div>
+            <div class="hero-battle-info">
+                <div class="hero-battle-name" id="hero-battle-name">Héroe</div>
+                <div class="hero-battle-bars">
+                    <div class="battle-bar-row"><span>❤ HP</span><div class="battle-bar-bg"><div class="battle-bar-fill hp-fill" id="battle-hp-bar"></div></div><span id="battle-hp-text">100/100</span></div>
+                    <div class="battle-bar-row"><span>✦ MP</span><div class="battle-bar-bg"><div class="battle-bar-fill mp-fill" id="battle-mp-bar"></div></div><span id="battle-mp-text">50/50</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="battle-actions" id="battle-actions">
+            <div class="action-row">
+                <button class="action-btn attack-btn" onclick="battleAction('attack')"><span class="action-icon">⚔</span><span>Atacar</span></button>
+                <button class="action-btn skill-btn" onclick="showSkills()"><span class="action-icon">✨</span><span>Habilidades</span></button>
+                <button class="action-btn item-btn" onclick="showBattleItems()"><span class="action-icon">🧪</span><span>Objetos</span></button>
+                <button class="action-btn flee-btn" onclick="battleAction('flee')"><span class="action-icon">💨</span><span>Huir</span></button>
+            </div>
+            <div class="skill-menu hidden" id="skill-menu"><div id="skill-list"></div><button class="btn-small cancel-btn" onclick="hideSkills()">← Cancelar</button></div>
+            <div class="item-menu hidden" id="battle-item-menu"><div id="battle-item-list"></div><button class="btn-small cancel-btn" onclick="hideBattleItems()">← Cancelar</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- RESULTADO BATALLA -->
+<div id="battle-result" class="hidden">
+    <div class="result-panel">
+        <div class="result-icon" id="result-icon">🏆</div>
+        <h2 id="result-title">¡Victoria!</h2>
+        <p id="result-desc"></p>
+        <div class="rewards" id="rewards-block"></div>
+        <div id="level-up-block" class="hidden">
+            <div class="level-up-banner">⭐ ¡SUBISTE DE NIVEL! ⭐</div>
+            <p id="level-up-details"></p>
+        </div>
+        <button class="btn-confirm" onclick="closeBattleResult()">Continuar</button>
+    </div>
+</div>
+
+<!-- INVENTARIO -->
+<div id="inventory" class="hidden screen-dark">
+    <div class="screen-header">
+        <button class="btn-back" onclick="closeInventory()">← Volver</button>
+        <h2 class="screen-title">🎒 Inventario</h2>
+    </div>
+    <div class="inventory-layout">
+        <div class="hero-stats-panel">
+            <h3 id="inv-hero-name">Héroe</h3>
+            <div class="inv-avatar" id="inv-avatar">🛡️</div>
+            <div class="stats-list" id="stats-list"></div>
+        </div>
+        <div class="items-panel"><h3>Objetos</h3><div class="items-grid" id="items-grid"></div></div>
+        <div class="equipment-panel">
+            <h3>Equipado</h3>
+            <div class="equip-slots">
+                <div class="equip-slot">⚔ Arma: <span id="eq-weapon">Ninguna</span></div>
+                <div class="equip-slot">🛡 Armadura: <span id="eq-armor">Ninguna</span></div>
+                <div class="equip-slot">💍 Accesorio: <span id="eq-accessory">Ninguno</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DIÁLOGO NPC -->
+<div id="npc-dialog" class="hidden">
+    <div class="dialog-box">
+        <div class="dialog-portrait" id="dialog-portrait">👴</div>
+        <div class="dialog-content">
+            <div class="dialog-name" id="dialog-name">NPC</div>
+            <div class="dialog-text" id="dialog-text"></div>
+        </div>
+        <div class="dialog-options" id="dialog-options"></div>
+    </div>
+</div>
+
+<!-- CRÉDITOS -->
+<div id="credits" class="hidden screen-dark">
+    <div class="credits-content">
+        <button class="btn-back" onclick="showScreen('main-menu')">← Volver</button>
+        <div class="credits-title">✦ Créditos ✦</div>
+        <p>Crónicas del Reino Olvidado</p>
+        <p>Un RPG por turnos de fantasía medieval</p>
+        <p>Desarrollado con HTML5, CSS3 y JavaScript</p>
+        <p>Guardado en LocalStorage — sin base de datos</p>
+        <p>© 2024 — Libre para todos ⚔️</p>
+    </div>
+</div>
+
+<!-- NOTIFICACIÓN -->
+<div class="notification hidden" id="notification"><span id="notification-text"></span></div>
+
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
