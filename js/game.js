@@ -5,7 +5,7 @@
 let state = {
     hero: null, currentZone: null, currentEnemy: null, battleActive: false,
     enemyEffects: { veneno:0, reduccionAtk:0, turnosEfecto:0, turnosEfecto2:0 },
-    heroEffects: { bonusDef:0, bonusAtk:0, turnosEfecto:0 },
+    heroEffects:  { bonusDef:0, bonusAtk:0, turnosEfecto:0 },
     misiones: {}, inventario: {}, equipado: { weapon:null, armor:null, accessory:null },
     selectedClass: null, kills: {}
 };
@@ -19,21 +19,19 @@ window.addEventListener('load', () => {
         document.getElementById('loading-screen').classList.add('hidden');
         document.getElementById('main-menu').classList.remove('hidden');
         checkSaveExists();
+
+        // FIX MÓVIL: escuchar tanto click como touchstart para iniciar música
+        let menuStarted = false;
+        function startMenuMusic() {
+            if (menuStarted) return;
+            menuStarted = true;
+            AUDIO.init(); AUDIO.resume();
+            AUDIO.playTheme('menu');
+        }
+        document.addEventListener('click',      startMenuMusic, { passive: true });
+        document.addEventListener('touchstart', startMenuMusic, { passive: true });
     }, 3000);
 });
-
-// Fix música en móvil: escuchar touch + click con flag para no duplicar
-let _audioInited = false;
-function _initAudio() {
-    if (_audioInited) return;
-    _audioInited = true;
-    AUDIO.init();
-    AUDIO.resume();
-    setTimeout(() => AUDIO.playTheme('menu'), 350);
-}
-['click','touchstart','touchend','keydown'].forEach(evt =>
-    document.addEventListener(evt, _initAudio, { passive:true })
-);
 
 function createParticles() {
     const c = document.getElementById('particles');
@@ -62,25 +60,14 @@ function showScreen(id) {
         if (el) el.classList.add('hidden');
     });
     const t = document.getElementById(id);
-    if (t) {
-        t.classList.remove('hidden');
-        t.classList.add('screen-in');
-        setTimeout(() => t.classList.remove('screen-in'), 400);
-    }
-    // Reponer panel de audio a posición normal (fuera de batalla)
-    resetAudioPanelPos();
-    if (id === 'main-menu' || id === 'character-select') AUDIO.playTheme('menu');
-    if (id === 'game-world' || id === 'zone-screen')     AUDIO.playTheme('world');
-}
-
-function resetAudioPanelPos() {
-    const p = document.getElementById('audio-panel');
-    if (!p) return;
-    p.style.bottom = ''; p.style.right = ''; p.style.left = ''; p.style.top = '';
+    if (t) { t.classList.remove('hidden'); t.classList.add('screen-in'); setTimeout(() => t.classList.remove('screen-in'), 400); }
+    // Música por pantalla — siempre llamar resume() antes
+    if (id === 'main-menu' || id === 'character-select') { AUDIO.resume(); AUDIO.playTheme('menu'); }
+    if (id === 'game-world' || id === 'zone-screen')     { AUDIO.resume(); AUDIO.playTheme('world'); }
 }
 
 // =============================================
-// SELECCIÓN DE CLASE
+// CLASE
 // =============================================
 function selectClass(cls) {
     document.querySelectorAll('.class-card').forEach(c => c.classList.remove('selected'));
@@ -105,7 +92,7 @@ function startGame() {
     };
     state.inventario = { pocion_hp: 3 };
     state.equipado   = { weapon: null, armor: null, accessory: null };
-    state.misiones   = { mision_aldea_1: { ...GAME_DATA.misiones.mision_aldea_1, activa: true, objetivo: { ...GAME_DATA.misiones.mision_aldea_1.objetivo, actual: 0 } } };
+    state.misiones   = { mision_aldea_1: { ...GAME_DATA.misiones.mision_aldea_1, activa:true, objetivo:{...GAME_DATA.misiones.mision_aldea_1.objetivo, actual:0} } };
     state.kills = {};
     showScreen('game-world');
     updateHUD();
@@ -117,17 +104,16 @@ function startGame() {
 // =============================================
 function updateHUD() {
     if (!state.hero) return;
-    const h = state.hero;
-    const cls = GAME_DATA.classes[h.clase];
-    document.getElementById('hud-avatar').textContent  = cls.icono;
-    document.getElementById('hud-name').textContent    = h.nombre;
-    document.getElementById('hud-level').textContent   = h.nivel;
-    document.getElementById('hud-class').textContent   = cls.nombre;
-    document.getElementById('gold-val').textContent    = h.oro;
-    const hpP = (h.hp / h.maxHp * 100).toFixed(1);
-    const mpP = (h.mp / h.maxMp * 100).toFixed(1);
+    const h = state.hero, cls = GAME_DATA.classes[h.clase];
+    document.getElementById('hud-avatar').textContent = cls.icono;
+    document.getElementById('hud-name').textContent   = h.nombre;
+    document.getElementById('hud-level').textContent  = h.nivel;
+    document.getElementById('hud-class').textContent  = cls.nombre;
+    document.getElementById('gold-val').textContent   = h.oro;
+    const hpP = (h.hp/h.maxHp*100).toFixed(1);
+    const mpP = (h.mp/h.maxMp*100).toFixed(1);
     const xpN = GAME_DATA.expParaNivel(h.nivel);
-    const xpP = Math.min(h.exp / xpN * 100, 100).toFixed(1);
+    const xpP = Math.min(h.exp/xpN*100,100).toFixed(1);
     document.getElementById('hp-bar').style.width  = hpP + '%';
     document.getElementById('mp-bar').style.width  = mpP + '%';
     document.getElementById('xp-bar').style.width  = xpP + '%';
@@ -143,7 +129,7 @@ function renderQuests() {
         if (!m.activa || m.completada) return;
         const d = document.createElement('div');
         d.className = 'quest-item';
-        d.innerHTML = `<div class="quest-name">📜 ${m.nombre}</div><div class="quest-progress">${m.objetivo.actual||0}/${m.objetivo.cantidad}</div>`;
+        d.innerHTML = `<div class="quest-name">📜 ${m.nombre}</div><div class="quest-progress">${m.objetivo.actual||0}/${m.objetivo.cantidad} derrotados</div>`;
         list.appendChild(d);
     });
 }
@@ -156,13 +142,12 @@ function enterZone(zoneId) {
     if (!zona) return;
     if (state.hero && state.hero.nivel < zona.nivelMin && zoneId !== 'aldea') {
         notify(`¡Necesitas nivel ${zona.nivelMin} para entrar aquí!`);
-        AUDIO.playerHit();
-        return;
+        AUDIO.playerHit(); return;
     }
     state.currentZone = zoneId;
-    document.getElementById('zone-title').textContent  = zona.nombre;
-    document.getElementById('zone-desc').textContent   = zona.descripcion;
-    document.getElementById('zone-art').textContent    = zona.icono;
+    document.getElementById('zone-title').textContent = zona.nombre;
+    document.getElementById('zone-desc').textContent  = zona.descripcion;
+    document.getElementById('zone-art').textContent   = zona.icono;
     const el = document.getElementById('zone-enemy-list');
     el.innerHTML = zona.enemigos.map(eid => {
         const e = GAME_DATA.enemigos[eid];
@@ -170,10 +155,9 @@ function enterZone(zoneId) {
     }).join('');
     const mid = zona.misionId;
     if (mid && !state.misiones[mid]) {
-        state.misiones[mid] = { ...GAME_DATA.misiones[mid], activa: true, objetivo: { ...GAME_DATA.misiones[mid].objetivo, actual: 0 } };
+        state.misiones[mid] = { ...GAME_DATA.misiones[mid], activa:true, objetivo:{...GAME_DATA.misiones[mid].objetivo, actual:0} };
         notify(`📜 Nueva misión: ${GAME_DATA.misiones[mid].nombre}`);
-        AUDIO.notification();
-        renderQuests();
+        AUDIO.notification(); renderQuests();
     }
     showScreen('zone-screen');
 }
@@ -195,7 +179,7 @@ function showNPC() {
         if (idx < npc.dialogo.length - 1) {
             addOpt("Continuar...", () => { AUDIO.click(); idx++; render(npc.dialogo[idx]); });
         } else {
-            addOpt("¡Gracias!",              () => { AUDIO.click(); closeDialog(); });
+            addOpt("¡Gracias!", () => { AUDIO.click(); closeDialog(); });
             addOpt("¿Tienes algo a la venta?", () => { AUDIO.click(); showShop(); });
         }
     }
@@ -218,7 +202,8 @@ function showShop() {
         const item = GAME_DATA.items[id];
         const b = document.createElement('button');
         b.className = 'dialog-option';
-        b.innerHTML = `${item.icono} ${item.nombre} — <b>${item.precio}</b> oro &nbsp;<small style="color:var(--text-dim)">${item.descripcion}</small>`;
+        // Usar texto en lugar de emoji para el oro (evita problemas en PC)
+        b.innerHTML = `${item.icono} ${item.nombre} — <span style="color:var(--gold)">${item.precio} oro</span> <small style="color:var(--text-dim)">${item.descripcion}</small>`;
         b.onclick = () => buyItem(id, item);
         opts.appendChild(b);
     });
@@ -232,8 +217,7 @@ function buyItem(id, item) {
     state.hero.oro -= item.precio;
     state.inventario[id] = (state.inventario[id] || 0) + 1;
     notify(`Compraste: ${item.icono} ${item.nombre}`);
-    AUDIO.itemPickup();
-    updateHUD();
+    AUDIO.itemPickup(); updateHUD();
 }
 
 // =============================================
@@ -241,11 +225,11 @@ function buyItem(id, item) {
 // =============================================
 function startBattle() {
     if (!state.currentZone) return;
-    const zona = GAME_DATA.zonas[state.currentZone];
-    const eid  = zona.enemigos[Math.floor(Math.random() * zona.enemigos.length)];
-    const base = GAME_DATA.enemigos[eid];
-    const nv   = Math.max(1, state.hero.nivel + Math.floor(Math.random() * 3) - 1);
-    const sc   = 1 + (nv - base.nivelBase) * 0.15;
+    const zona  = GAME_DATA.zonas[state.currentZone];
+    const eid   = zona.enemigos[Math.floor(Math.random() * zona.enemigos.length)];
+    const base  = GAME_DATA.enemigos[eid];
+    const nv    = Math.max(1, state.hero.nivel + Math.floor(Math.random() * 3) - 1);
+    const sc    = 1 + (nv - base.nivelBase) * 0.15;
 
     state.currentEnemy = {
         id: eid, nombre: base.nombre, icono: base.icono, nivel: nv,
@@ -275,42 +259,30 @@ function startBattle() {
     document.getElementById('skill-menu').classList.add('hidden');
     document.getElementById('battle-item-menu').classList.add('hidden');
     setBtns(true);
-
-    // Mover panel de audio arriba-derecha durante batalla para no tapar botones
-    const ap = document.getElementById('audio-panel');
-    if (ap) {
-        ap.style.bottom = 'auto';
-        ap.style.left   = 'auto';
-        ap.style.top    = '70px';
-        ap.style.right  = '14px';
-    }
-
-    AUDIO.playTheme('battle');
+    AUDIO.resume(); AUDIO.playTheme('battle');
 }
 
 function updateBattleUI() {
     const h = state.hero, e = state.currentEnemy;
-    document.getElementById('enemy-hp-bar').style.width    = Math.max(0, e.hp / e.maxHp * 100) + '%';
-    document.getElementById('enemy-hp-text').textContent   = `${e.hp}/${e.maxHp}`;
-    document.getElementById('battle-hp-bar').style.width   = Math.max(0, h.hp / h.maxHp * 100) + '%';
-    document.getElementById('battle-mp-bar').style.width   = Math.max(0, h.mp / h.maxMp * 100) + '%';
-    document.getElementById('battle-hp-text').textContent  = `${h.hp}/${h.maxHp}`;
-    document.getElementById('battle-mp-text').textContent  = `${h.mp}/${h.maxMp}`;
+    document.getElementById('enemy-hp-bar').style.width  = Math.max(0, e.hp/e.maxHp*100) + '%';
+    document.getElementById('enemy-hp-text').textContent = `${e.hp}/${e.maxHp}`;
+    document.getElementById('battle-hp-bar').style.width = Math.max(0, h.hp/h.maxHp*100) + '%';
+    document.getElementById('battle-mp-bar').style.width = Math.max(0, h.mp/h.maxMp*100) + '%';
+    document.getElementById('battle-hp-text').textContent = `${h.hp}/${h.maxHp}`;
+    document.getElementById('battle-mp-text').textContent = `${h.mp}/${h.maxMp}`;
 }
 
 function addLog(text, cls) {
     const log = document.getElementById('battle-log');
-    const p = document.createElement('p');
-    p.className = 'log-entry ' + cls;
-    p.textContent = text;
-    log.appendChild(p);
-    log.scrollTop = log.scrollHeight;
+    const p   = document.createElement('p');
+    p.className = 'log-entry ' + cls; p.textContent = text;
+    log.appendChild(p); log.scrollTop = log.scrollHeight;
 }
 
 function showDmg(amt, color, isHero) {
     const fx = document.getElementById('battle-effects');
     const d  = document.createElement('div');
-    d.className   = 'damage-number';
+    d.className = 'damage-number';
     d.textContent = amt > 0 ? `-${amt}` : `+${Math.abs(amt)}`;
     d.style.color = color;
     d.style.left  = (25 + Math.random() * 50) + '%';
@@ -327,10 +299,10 @@ async function battleAction(action) {
 
     if (action === 'attack') {
         const base = h.atk + (state.heroEffects.bonusAtk || 0);
-        let dmg    = Math.max(1, calcDmg(base, e.def));
+        let dmg = Math.max(1, calcDmg(base, e.def));
         const crit = Math.random() < 0.15;
-        if (crit) { dmg = Math.floor(dmg * 1.8); AUDIO.critical(); }
-        else { AUDIO.attack(); }
+        if (crit) { dmg = Math.floor(dmg*1.8); AUDIO.critical(); }
+        else AUDIO.attack();
         e.hp = Math.max(0, e.hp - dmg);
         document.getElementById('enemy-sprite').classList.add('taking-hit');
         setTimeout(() => document.getElementById('enemy-sprite').classList.remove('taking-hit'), 400);
@@ -342,13 +314,9 @@ async function battleAction(action) {
         if (Math.random() < 0.5) {
             addLog(`💨 ¡${h.nombre} escapó del combate!`, 'player-action');
             await sleep(800);
-            AUDIO.playTheme('world');
-            endBattle(false, true);
-            return;
-        } else {
-            addLog(`❌ ¡No pudiste escapar!`, 'enemy-action');
-            acted = true;
-        }
+            AUDIO.resume(); AUDIO.playTheme('world');
+            endBattle(false, true); return;
+        } else { addLog(`❌ ¡No pudiste escapar!`, 'enemy-action'); acted = true; }
     }
 
     updateBattleUI();
@@ -369,45 +337,44 @@ async function battleAction(action) {
             state.heroEffects.turnosEfecto--;
             if (state.heroEffects.turnosEfecto <= 0) { state.heroEffects.bonusDef = 0; state.heroEffects.bonusAtk = 0; }
         }
-        if (state.enemyEffects.reduccionAtk > 0 && state.enemyEffects.turnosEfecto2 > 0) {
+        if (state.enemyEffects.turnosEfecto2 > 0) {
             state.enemyEffects.turnosEfecto2--;
             if (state.enemyEffects.turnosEfecto2 <= 0) state.enemyEffects.reduccionAtk = 0;
         }
         await sleep(700);
-        const eAtk  = Math.max(1, e.atk - (state.enemyEffects.reduccionAtk || 0));
-        const eDef  = h.def + (state.heroEffects.bonusDef || 0);
-        let eDmg    = Math.max(1, calcDmg(eAtk, eDef));
+        const eAtk = Math.max(1, e.atk - (state.enemyEffects.reduccionAtk || 0));
+        const eDef = h.def + (state.heroEffects.bonusDef || 0);
+        let eDmg   = Math.max(1, calcDmg(eAtk, eDef));
         const eCrit = Math.random() < 0.08;
         if (eCrit) eDmg = Math.floor(eDmg * 1.6);
         h.hp = Math.max(0, h.hp - eDmg);
         AUDIO.playerHit();
         showDmg(eDmg, '#ff6060', true);
-        addLog(eCrit ? `💥 ¡${e.nombre} golpe crítico! ${eDmg}!` : `${e.icono} ${e.nombre} ataca por ${eDmg}.`, 'enemy-action');
+        addLog(eCrit ? `💥 ¡${e.nombre} crítico! ${eDmg}!` : `${e.icono} ${e.nombre} ataca por ${eDmg}.`, 'enemy-action');
         updateBattleUI(); updateHUD();
         if (h.hp <= 0) { await sleep(400); endBattle(false, false); return; }
     }
 
-    await sleep(200);
-    setBtns(true);
+    await sleep(200); setBtns(true);
 }
 
 async function useSkill(skillId) {
     hideSkills();
     if (!state.battleActive) return;
-    const h  = state.hero, e = state.currentEnemy;
+    const h = state.hero, e = state.currentEnemy;
     const sk = GAME_DATA.habilidades[skillId];
     if (h.mp < sk.costo) { notify("¡No tienes suficiente MP!"); AUDIO.playerHit(); setBtns(true); return; }
     h.mp -= sk.costo;
     setBtns(false);
 
     if (sk.tipo === 'ataque' || sk.tipo === 'magico') {
-        let dmg = Math.max(1, Math.floor(((sk.tipo === 'magico' ? h.mag : h.atk) + (state.heroEffects.bonusAtk||0)) * sk.multiplicador) - Math.floor(e.def * 0.5));
+        let dmg = Math.max(1, Math.floor(((sk.tipo==='magico' ? h.mag : h.atk) + (state.heroEffects.bonusAtk||0)) * sk.multiplicador) - Math.floor(e.def*0.5));
         const isCrit = sk.garantizaCritico || Math.random() < 0.2;
-        if (isCrit) { dmg = Math.floor(dmg * 1.5); AUDIO.critical(); addLog(`💥 ¡${sk.nombre} CRÍTICO! ${dmg}!`, 'critical'); }
+        if (isCrit) { dmg = Math.floor(dmg*1.5); AUDIO.critical(); addLog(`💥 ¡${sk.nombre} CRÍTICO! ${dmg}!`,'critical'); }
         else {
-            if (sk.tipo === 'magico') { skillId === 'bola_fuego' ? AUDIO.fireball() : AUDIO.magic(); }
+            if (sk.tipo === 'magico') { skillId==='bola_fuego' ? AUDIO.fireball() : AUDIO.magic(); }
             else { ['flecha_certera','tiro_critico','lluvia_flechas','flecha_envenenada'].includes(skillId) ? AUDIO.arrow() : AUDIO.attack(); }
-            addLog(`✨ ${h.nombre} usa ${sk.nombre}! ${dmg} de daño.`, 'skill-action');
+            addLog(`✨ ${h.nombre} usa ${sk.nombre}! ${dmg} de daño.`,'skill-action');
         }
         e.hp = Math.max(0, e.hp - dmg);
         document.getElementById('enemy-sprite').classList.add('taking-hit');
@@ -415,52 +382,38 @@ async function useSkill(skillId) {
         showDmg(dmg, '#c080ff', false);
     } else if (sk.tipo === 'curar') {
         const cura = Math.floor(h.maxHp * sk.porcentaje);
-        h.hp = Math.min(h.maxHp, h.hp + cura);
-        AUDIO.heal();
-        showDmg(-cura, '#60e080', true);
-        addLog(`💚 ${sk.nombre}! Recuperas ${cura} HP.`, 'heal-action');
+        h.hp = Math.min(h.maxHp, h.hp + cura); AUDIO.heal();
+        showDmg(-cura, '#60e080', true); addLog(`💚 ${sk.nombre}! Recuperas ${cura} HP.`,'heal-action');
     } else if (sk.tipo === 'drenar') {
-        const dmg  = Math.max(1, Math.floor(h.atk * sk.multiplicador) - Math.floor(e.def * 0.3));
+        const dmg = Math.max(1, Math.floor(h.atk * sk.multiplicador) - Math.floor(e.def*0.3));
         const robo = Math.floor(dmg * 0.5);
-        e.hp  = Math.max(0, e.hp - dmg);
-        h.hp  = Math.min(h.maxHp, h.hp + robo);
-        AUDIO.drain();
-        showDmg(dmg, '#c080ff', false); showDmg(-robo, '#60e080', true);
-        addLog(`🩸 Drenas ${dmg} y recuperas ${robo} HP.`, 'skill-action');
+        e.hp = Math.max(0, e.hp - dmg); h.hp = Math.min(h.maxHp, h.hp + robo);
+        AUDIO.drain(); showDmg(dmg,'#c080ff',false); showDmg(-robo,'#60e080',true);
+        addLog(`🩸 Drenas ${dmg} y recuperas ${robo} HP.`,'skill-action');
     } else if (sk.tipo === 'veneno') {
-        state.enemyEffects.veneno      = sk.dañoPorTurno;
-        state.enemyEffects.turnosEfecto = sk.turnos;
-        AUDIO.poison();
-        addLog(`☠ ${e.nombre} envenenado! ${sk.dañoPorTurno}/turno`, 'skill-action');
+        state.enemyEffects.veneno = sk.dañoPorTurno; state.enemyEffects.turnosEfecto = sk.turnos;
+        AUDIO.poison(); addLog(`☠ ${e.nombre} envenenado! ${sk.dañoPorTurno}/turno`,'skill-action');
     } else if (sk.tipo === 'buff') {
-        state.heroEffects.bonusDef      = sk.bonusDef || 0;
-        state.heroEffects.bonusAtk      = sk.bonusAtk || 0;
-        state.heroEffects.turnosEfecto  = sk.turnos;
-        AUDIO.buff();
-        addLog(`⬆ Te fortaleces por ${sk.turnos} turnos!`, 'heal-action');
+        state.heroEffects.bonusDef = sk.bonusDef||0; state.heroEffects.bonusAtk = sk.bonusAtk||0;
+        state.heroEffects.turnosEfecto = sk.turnos; AUDIO.buff();
+        addLog(`⬆ Te fortaleces por ${sk.turnos} turnos!`,'heal-action');
     } else if (sk.tipo === 'defensa') {
-        state.heroEffects.bonusDef      = sk.bonusDef;
-        state.heroEffects.turnosEfecto  = sk.turnos;
-        AUDIO.buff();
-        addLog(`🛡 +${sk.bonusDef} DEF por ${sk.turnos} turnos.`, 'heal-action');
+        state.heroEffects.bonusDef = sk.bonusDef; state.heroEffects.turnosEfecto = sk.turnos;
+        AUDIO.buff(); addLog(`🛡 +${sk.bonusDef} DEF por ${sk.turnos} turnos.`,'heal-action');
     } else if (sk.tipo === 'debuff') {
-        state.enemyEffects.reduccionAtk  = sk.reduccionAtk;
-        state.enemyEffects.turnosEfecto2 = sk.turnos;
-        AUDIO.magic();
-        addLog(`🔮 ${e.nombre} debilitado -${sk.reduccionAtk} ATK!`, 'skill-action');
+        state.enemyEffects.reduccionAtk = sk.reduccionAtk; state.enemyEffects.turnosEfecto2 = sk.turnos;
+        AUDIO.magic(); addLog(`🔮 ${e.nombre} debilitado -${sk.reduccionAtk} ATK!`,'skill-action');
     }
 
     updateBattleUI(); updateHUD();
     if (e.hp <= 0) { await sleep(500); endBattle(true, false); return; }
-
     await sleep(700);
-    const eAtk = Math.max(1, e.atk - (state.enemyEffects.reduccionAtk || 0));
-    const eDef = h.def + (state.heroEffects.bonusDef || 0);
+    const eAtk = Math.max(1, e.atk - (state.enemyEffects.reduccionAtk||0));
+    const eDef = h.def + (state.heroEffects.bonusDef||0);
     const eDmg = Math.max(1, calcDmg(eAtk, eDef));
-    h.hp = Math.max(0, h.hp - eDmg);
-    AUDIO.playerHit();
-    showDmg(eDmg, '#ff6060', true);
-    addLog(`${e.icono} ${e.nombre} ataca por ${eDmg}.`, 'enemy-action');
+    h.hp = Math.max(0, h.hp - eDmg); AUDIO.playerHit();
+    showDmg(eDmg,'#ff6060',true);
+    addLog(`${e.icono} ${e.nombre} ataca por ${eDmg}.`,'enemy-action');
     updateBattleUI(); updateHUD();
     if (h.hp <= 0) { await sleep(400); endBattle(false, false); return; }
     setBtns(true);
@@ -468,23 +421,11 @@ async function useSkill(skillId) {
 
 function useBattleItem(id) {
     hideBattleItems();
-    const item = GAME_DATA.items[id];
-    const h    = state.hero;
+    const item = GAME_DATA.items[id], h = state.hero;
     if (!state.inventario[id] || state.inventario[id] <= 0) return;
-    if (item.efecto === 'curar_hp') {
-        const ant = h.hp; h.hp = Math.min(h.maxHp, h.hp + item.valor);
-        showDmg(-(h.hp - ant), '#60e080', true);
-        addLog(`🧪 ${item.nombre}: +${h.hp-ant} HP.`, 'heal-action');
-        AUDIO.heal();
-    } else if (item.efecto === 'curar_mp') {
-        h.mp = Math.min(h.maxMp, h.mp + item.valor);
-        addLog(`💧 ${item.nombre}: +${item.valor} MP.`, 'heal-action');
-        AUDIO.heal();
-    } else if (item.efecto === 'curar_todo') {
-        h.hp = h.maxHp; h.mp = h.maxMp;
-        addLog(`✨ ${item.nombre}: ¡HP y MP restaurados!`, 'heal-action');
-        AUDIO.levelUp();
-    }
+    if (item.efecto === 'curar_hp')   { const a=h.hp; h.hp=Math.min(h.maxHp,h.hp+item.valor); showDmg(-(h.hp-a),'#60e080',true); addLog(`🧪 ${item.nombre}: +${h.hp-a} HP.`,'heal-action'); AUDIO.heal(); }
+    else if (item.efecto === 'curar_mp')  { h.mp=Math.min(h.maxMp,h.mp+item.valor); addLog(`💧 ${item.nombre}: +${item.valor} MP.`,'heal-action'); AUDIO.heal(); }
+    else if (item.efecto === 'curar_todo'){ h.hp=h.maxHp; h.mp=h.maxMp; addLog(`✨ ${item.nombre}: ¡HP y MP restaurados!`,'heal-action'); AUDIO.levelUp(); }
     state.inventario[id]--;
     if (state.inventario[id] <= 0) delete state.inventario[id];
     updateBattleUI(); updateHUD();
@@ -493,31 +434,29 @@ function useBattleItem(id) {
 function endBattle(victory, fled) {
     state.battleActive = false;
     document.getElementById('battle-screen').classList.add('hidden');
-    resetAudioPanelPos();
-    if (fled) { setBtns(true); AUDIO.playTheme('world'); return; }
+    if (fled) { setBtns(true); AUDIO.resume(); AUDIO.playTheme('world'); return; }
 
     const h = state.hero, e = state.currentEnemy;
     if (victory) {
         AUDIO.victory();
-        setTimeout(() => AUDIO.playTheme('world'), 2500);
+        setTimeout(() => { AUDIO.resume(); AUDIO.playTheme('world'); }, 2500);
         state.kills[e.id] = (state.kills[e.id] || 0) + 1;
         checkMissions(e.id);
         h.exp += e.exp; h.oro += e.oro;
         document.getElementById('result-icon').textContent  = '🏆';
         document.getElementById('result-title').textContent = '¡Victoria!';
         document.getElementById('result-desc').textContent  = `Derrotaste a ${e.nombre}`;
-        let rhtml = `<div class="reward-item">⭐ +${e.exp} EXP</div><div class="reward-item">💰 +${e.oro} Oro</div>`;
-
-        // Drop de equipo con peso segun zona
-        if (Math.random() < 0.30) {
-            const pool = Object.entries(GAME_DATA.items).filter(([k,v]) => v.tipo !== 'consumible' ? Math.random() < 0.4 : true);
-            const drop = pool[Math.floor(Math.random() * pool.length)][0];
-            state.inventario[drop] = (state.inventario[drop] || 0) + 1;
-            rhtml += `<div class="reward-item">${GAME_DATA.items[drop].icono} ¡${GAME_DATA.items[drop].nombre} encontrado!</div>`;
-            AUDIO.itemPickup();
+        let rhtml = `<div class="reward-item">⭐ +${e.exp} EXP</div><div class="reward-item">+${e.oro} oro</div>`;
+        if (Math.random() < 0.3) {
+            const drops = Object.keys(GAME_DATA.items).filter(k => GAME_DATA.items[k].tipo !== 'consumible' || Math.random()<.5);
+            const drop  = drops[Math.floor(Math.random() * drops.length)];
+            if (drop) {
+                state.inventario[drop] = (state.inventario[drop] || 0) + 1;
+                rhtml += `<div class="reward-item">${GAME_DATA.items[drop].icono} ¡${GAME_DATA.items[drop].nombre} encontrado!</div>`;
+                AUDIO.itemPickup();
+            }
         }
         document.getElementById('rewards-block').innerHTML = rhtml;
-
         const lvlBlock = document.getElementById('level-up-block');
         const xpNeed   = GAME_DATA.expParaNivel(h.nivel);
         if (h.exp >= xpNeed) {
@@ -525,18 +464,16 @@ function endBattle(victory, fled) {
             const cls = GAME_DATA.classes[h.clase];
             h.maxHp += cls.hpPerLevel; h.hp = h.maxHp;
             h.maxMp += cls.mpPerLevel; h.mp = h.maxMp;
-            h.atk   += cls.atkPerLevel; h.def += cls.defPerLevel;
-            h.mag   += cls.magPerLevel; h.agi += cls.agiPerLevel;
+            h.atk += cls.atkPerLevel; h.def += cls.defPerLevel;
+            h.mag += cls.magPerLevel; h.agi += cls.agiPerLevel;
             lvlBlock.classList.remove('hidden');
             document.getElementById('level-up-details').textContent = `Nivel ${h.nivel}! HP+${cls.hpPerLevel} ATK+${cls.atkPerLevel} DEF+${cls.defPerLevel}`;
             setTimeout(() => AUDIO.levelUp(), 600);
             unlockZones();
-        } else {
-            lvlBlock.classList.add('hidden');
-        }
+        } else lvlBlock.classList.add('hidden');
     } else {
         AUDIO.defeat();
-        setTimeout(() => AUDIO.playTheme('world'), 2000);
+        setTimeout(() => { AUDIO.resume(); AUDIO.playTheme('world'); }, 2000);
         document.getElementById('result-icon').textContent  = '💀';
         document.getElementById('result-title').textContent = 'Has caído...';
         document.getElementById('result-desc').textContent  = 'Pero los héroes no mueren, solo descansan.';
@@ -566,24 +503,31 @@ function checkMissions(eid) {
 }
 
 function completeMission(id) {
-    const m = state.misiones[id];
+    const m = state.misiones[id], r = m.recompensa;
     m.completada = true;
-    const r = m.recompensa;
     state.hero.exp += r.exp; state.hero.oro += r.oro;
     if (r.item) state.inventario[r.item] = (state.inventario[r.item] || 0) + 1;
-    notify(`🎉 ¡Misión: ${m.nombre}! +${r.exp} EXP, +${r.oro} Oro`);
-    AUDIO.notification();
-    updateHUD();
+    notify(`🎉 ¡Misión: ${m.nombre}! +${r.exp} EXP, +${r.oro} oro`);
+    AUDIO.notification(); updateHUD();
 }
 
 function unlockZones() {
-    const h   = state.hero;
-    const req = { bosque:2, crypta:3, minas:4, castillo:7, templo:9, volcan:10, abismo:15 };
+    const h = state.hero;
+    const unlockMap = {
+        'zone-bosque':     2,
+        'zone-catacumbas': 3,
+        'zone-minas':      4,
+        'zone-castillo':   7,
+        'zone-torre-mago': 8,
+        'zone-volcan':     10,
+        'zone-abismo':     15
+    };
     document.querySelectorAll('.region').forEach(region => {
-        const m = (region.getAttribute('onclick')||'').match(/enterZone\('(.+)'\)/);
-        if (!m) return;
-        const zid = m[1];
-        if (req[zid] && h.nivel >= req[zid]) {
+        const match = (region.getAttribute('onclick')||'').match(/enterZone\('(.+)'\)/);
+        if (!match) return;
+        const zoneKey = 'zone-' + match[1].replace('_','-');
+        const req = unlockMap[zoneKey];
+        if (req && h.nivel >= req) {
             region.classList.remove('region-locked');
             const lock = region.querySelector('.lock-icon');
             if (lock) lock.remove();
@@ -592,7 +536,7 @@ function unlockZones() {
 }
 
 // =============================================
-// MENÚS DE BATALLA
+// MENÚS BATALLA
 // =============================================
 function showSkills() {
     const cls = GAME_DATA.classes[state.hero.clase];
@@ -604,46 +548,42 @@ function showSkills() {
         b.className = 'skill-btn-item';
         b.disabled  = state.hero.mp < sk.costo;
         b.innerHTML = `<span>${sk.icono} ${sk.nombre}</span><br><span class="skill-cost">MP: ${sk.costo}</span>`;
-        b.onclick   = () => useSkill(sid);
+        b.onclick = () => useSkill(sid);
         sl.appendChild(b);
     });
     document.getElementById('battle-actions').querySelector('.action-row').classList.add('hidden');
     document.getElementById('skill-menu').classList.remove('hidden');
 }
-
 function hideSkills() {
     document.getElementById('skill-menu').classList.add('hidden');
     document.getElementById('battle-actions').querySelector('.action-row').classList.remove('hidden');
 }
 
 function showBattleItems() {
-    const il         = document.getElementById('battle-item-list');
-    il.innerHTML     = '';
+    const il = document.getElementById('battle-item-list');
+    il.innerHTML = '';
     const consumibles = Object.entries(state.inventario).filter(([id]) => GAME_DATA.items[id]?.tipo === 'consumible');
     if (!consumibles.length) {
         il.innerHTML = '<p style="color:var(--text-dim);padding:10px;grid-column:1/-1;font-style:italic;">No tienes objetos.</p>';
     } else {
         consumibles.forEach(([id, qty]) => {
             const item = GAME_DATA.items[id];
-            const b    = document.createElement('button');
-            b.className   = 'item-btn-item';
-            b.innerHTML   = `${item.icono} ${item.nombre} x${qty}`;
-            b.onclick     = () => useBattleItem(id);
+            const b = document.createElement('button');
+            b.className = 'item-btn-item';
+            b.innerHTML = `${item.icono} ${item.nombre} x${qty}`;
+            b.onclick = () => useBattleItem(id);
             il.appendChild(b);
         });
     }
     document.getElementById('battle-actions').querySelector('.action-row').classList.add('hidden');
     document.getElementById('battle-item-menu').classList.remove('hidden');
 }
-
 function hideBattleItems() {
     document.getElementById('battle-item-menu').classList.add('hidden');
     document.getElementById('battle-actions').querySelector('.action-row').classList.remove('hidden');
 }
 
-function setBtns(on) {
-    document.querySelectorAll('.action-btn').forEach(b => b.disabled = !on);
-}
+function setBtns(on) { document.querySelectorAll('.action-btn').forEach(b => b.disabled = !on); }
 
 // =============================================
 // INVENTARIO
@@ -655,13 +595,13 @@ function renderInventory() {
     document.getElementById('inv-avatar').textContent    = cls.icono;
     document.getElementById('stats-list').innerHTML = `
         <div class="stat-row"><span>❤ HP</span><span>${h.hp}/${h.maxHp}</span></div>
-        <div class="stat-row"><span>❆ MP</span><span>${h.mp}/${h.maxMp}</span></div>
+        <div class="stat-row"><span>✦ MP</span><span>${h.mp}/${h.maxMp}</span></div>
         <div class="stat-row"><span>⭐ EXP</span><span>${h.exp}/${GAME_DATA.expParaNivel(h.nivel)}</span></div>
         <div class="stat-row"><span>⚔ Ataque</span><span>${h.atk}</span></div>
         <div class="stat-row"><span>🛡 Defensa</span><span>${h.def}</span></div>
         <div class="stat-row"><span>✨ Magia</span><span>${h.mag}</span></div>
         <div class="stat-row"><span>💨 Agilidad</span><span>${h.agi}</span></div>
-        <div class="stat-row"><span>💰 Oro</span><span>${h.oro}</span></div>
+        <div class="stat-row"><span>Oro</span><span>${h.oro}</span></div>
     `;
     const grid = document.getElementById('items-grid');
     grid.innerHTML = '';
@@ -670,10 +610,10 @@ function renderInventory() {
         if (!qty || !GAME_DATA.items[id]) return;
         any = true;
         const item = GAME_DATA.items[id];
-        const d    = document.createElement('div');
-        d.className  = 'item-slot'; d.title = item.descripcion;
-        d.innerHTML  = `<div class="item-icon">${item.icono}</div><div class="item-name">${item.nombre}</div><div class="item-qty">x${qty}</div>`;
-        d.onclick    = () => { AUDIO.click(); useItemFromInventory(id, item); };
+        const d = document.createElement('div');
+        d.className = 'item-slot'; d.title = item.descripcion;
+        d.innerHTML = `<div class="item-icon">${item.icono}</div><div class="item-name">${item.nombre}</div><div class="item-qty">x${qty}</div>`;
+        d.onclick = () => { AUDIO.click(); useItemFromInventory(id, item); };
         grid.appendChild(d);
     });
     if (!any) grid.innerHTML = '<p style="color:var(--text-dim);font-style:italic;padding:20px;">Inventario vacío.</p>';
@@ -686,9 +626,9 @@ function renderInventory() {
 function useItemFromInventory(id, item) {
     const h = state.hero;
     if (item.tipo === 'consumible') {
-        if (item.efecto === 'curar_hp')   { const a = h.hp; h.hp = Math.min(h.maxHp, h.hp+item.valor); notify(`${item.icono} +${h.hp-a} HP`); AUDIO.heal(); }
-        else if (item.efecto === 'curar_mp')   { h.mp = Math.min(h.maxMp, h.mp+item.valor); notify(`${item.icono} +${item.valor} MP`); AUDIO.heal(); }
-        else if (item.efecto === 'curar_todo') { h.hp=h.maxHp; h.mp=h.maxMp; notify(`${item.icono} ¡HP y MP restaurados!`); AUDIO.levelUp(); }
+        if (item.efecto === 'curar_hp')   { const a=h.hp; h.hp=Math.min(h.maxHp,h.hp+item.valor); notify(`${item.icono} +${h.hp-a} HP`); AUDIO.heal(); }
+        else if (item.efecto === 'curar_mp')  { h.mp=Math.min(h.maxMp,h.mp+item.valor); notify(`${item.icono} +${item.valor} MP`); AUDIO.heal(); }
+        else if (item.efecto === 'curar_todo'){ h.hp=h.maxHp; h.mp=h.maxMp; notify(`${item.icono} ¡HP y MP restaurados!`); AUDIO.levelUp(); }
         state.inventario[id]--;
         if (state.inventario[id] <= 0) delete state.inventario[id];
         updateHUD(); renderInventory();
@@ -698,21 +638,21 @@ function useItemFromInventory(id, item) {
 }
 
 function equipItem(id, item) {
-    const h    = state.hero;
+    const h = state.hero;
     const slot = {arma:'weapon', armadura:'armor', accesorio:'accessory'}[item.tipo];
     if (!slot) return;
     const prev = state.equipado[slot];
     if (prev) {
         const p = GAME_DATA.items[prev];
-        if (p.bonusAtk) h.atk -= p.bonusAtk;
-        if (p.bonusDef) h.def -= p.bonusDef;
-        if (p.bonusMag) h.mag -= p.bonusMag;
+        if (p.bonusAtk) h.atk  -= p.bonusAtk;
+        if (p.bonusDef) h.def  -= p.bonusDef;
+        if (p.bonusMag) h.mag  -= p.bonusMag;
         if (p.bonusHp)  { h.maxHp -= p.bonusHp; h.hp = Math.min(h.hp, h.maxHp); }
         state.inventario[prev] = (state.inventario[prev] || 0) + 1;
     }
-    if (item.bonusAtk) h.atk += item.bonusAtk;
-    if (item.bonusDef) h.def += item.bonusDef;
-    if (item.bonusMag) h.mag += item.bonusMag;
+    if (item.bonusAtk) h.atk  += item.bonusAtk;
+    if (item.bonusDef) h.def  += item.bonusDef;
+    if (item.bonusMag) h.mag  += item.bonusMag;
     if (item.bonusHp)  h.maxHp += item.bonusHp;
     state.equipado[slot] = id;
     state.inventario[id]--;
@@ -722,9 +662,7 @@ function equipItem(id, item) {
     updateHUD(); renderInventory();
 }
 
-function closeInventory() {
-    state.hero ? showScreen('game-world') : showScreen('main-menu');
-}
+function closeInventory() { state.hero ? showScreen('game-world') : showScreen('main-menu'); }
 
 // =============================================
 // GUARDAR / CARGAR
@@ -743,13 +681,13 @@ function saveGame() {
 function loadGame() {
     const raw = localStorage.getItem('cronica_save');
     if (!raw) { notify('No hay partida guardada.'); AUDIO.playerHit(); return; }
-    const d         = JSON.parse(raw);
-    state.hero      = d.hero;
+    const d = JSON.parse(raw);
+    state.hero        = d.hero;
     state.currentZone = d.currentZone;
-    state.misiones  = d.misiones  || {};
-    state.inventario= d.inventario|| {};
-    state.equipado  = d.equipado  || { weapon:null, armor:null, accessory:null };
-    state.kills     = d.kills     || {};
+    state.misiones    = d.misiones   || {};
+    state.inventario  = d.inventario || {};
+    state.equipado    = d.equipado   || { weapon:null, armor:null, accessory:null };
+    state.kills       = d.kills      || {};
     showScreen('game-world');
     updateHUD(); renderQuests(); unlockZones();
     AUDIO.select();
@@ -757,14 +695,10 @@ function loadGame() {
 }
 
 // =============================================
-// MISC
+// UTILS
 // =============================================
-function showQuestLog() { notify("📜 Misiones visibles en el panel"); }
-
-function calcDmg(atk, def) {
-    return Math.max(1, atk - Math.floor(def * 0.7) + Math.floor(Math.random() * 4) - 2);
-}
-
+function showQuestLog() { notify("📜 Misiones visibles en el panel derecho"); }
+function calcDmg(atk, def) { return Math.max(1, atk - Math.floor(def*0.7) + Math.floor(Math.random()*4) - 2); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 let notifTimer;

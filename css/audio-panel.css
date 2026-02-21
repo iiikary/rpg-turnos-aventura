@@ -1,35 +1,36 @@
 /* =========================================
-   PANEL DE AUDIO FLOTANTE — Mobile-First
+   PANEL DE AUDIO — Top-Right, lejos de controles de batalla
    ========================================= */
 
 .audio-panel {
     position: fixed;
-    bottom: 20px;
-    left: 16px;
+    top: 72px;     /* debajo del HUD */
+    right: 14px;
+    left: auto;
+    bottom: auto;
     z-index: 500;
     display: flex;
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 8px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
 }
 
-/* Botón principal — tamaño táctil cómodo */
 .audio-toggle-btn {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
-    background: rgba(14, 10, 4, 0.95);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    background: rgba(14,10,4,0.94);
     border: 1.5px solid var(--border-gold);
     color: var(--gold);
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     cursor: pointer;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, border-color 0.2s, transform 0.15s;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(212,160,23,0.08);
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.65);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
@@ -37,25 +38,24 @@
 
 .audio-toggle-btn:hover,
 .audio-toggle-btn:active {
-    background: rgba(212, 160, 23, 0.18);
+    background: rgba(212,160,23,0.18);
     border-color: var(--gold);
     transform: scale(1.08);
 }
 
-/* Panel de controles — sin clip-path (falla en algunos móviles) */
 .audio-controls {
-    background: rgba(10, 8, 3, 0.97);
+    background: rgba(10,8,3,0.97);
     border: 1.5px solid var(--border-gold);
     border-radius: 8px;
     padding: 14px 16px;
-    min-width: 200px;
-    max-width: 220px;
-    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.75);
-    animation: slideUpPanel 0.2s ease;
+    min-width: 196px;
+    max-width: 216px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.75);
+    animation: slideDownPanel 0.2s ease;
 }
 
-@keyframes slideUpPanel {
-    from { opacity: 0; transform: translateY(8px); }
+@keyframes slideDownPanel {
+    from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -77,10 +77,10 @@
 
 .audio-btn {
     flex: 1;
-    padding: 10px 6px;
+    padding: 9px 6px;
     border: 1px solid var(--border);
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,0.5);
     color: var(--text-dim);
     cursor: pointer;
     font-family: 'Crimson Text', serif;
@@ -88,16 +88,16 @@
     transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     justify-content: center;
-    min-height: 40px;
+    min-height: 38px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
 }
 
 .audio-btn.active {
     border-color: var(--gold-dark);
-    background: rgba(212, 160, 23, 0.14);
+    background: rgba(212,160,23,0.14);
     color: var(--gold-light);
 }
 
@@ -137,7 +137,6 @@
     touch-action: manipulation;
 }
 
-/* Thumb grande para dedos */
 .audio-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 22px;
@@ -145,13 +144,8 @@
     background: var(--gold);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 8px rgba(212, 160, 23, 0.5);
+    box-shadow: 0 0 7px rgba(212,160,23,0.5);
     border: 2px solid rgba(0,0,0,0.3);
-    transition: transform 0.12s;
-}
-
-.audio-slider::-webkit-slider-thumb:active {
-    transform: scale(1.2);
 }
 
 .audio-slider::-moz-range-thumb {
@@ -161,33 +155,22 @@
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid rgba(0,0,0,0.3);
-    box-shadow: 0 0 8px rgba(212, 160, 23, 0.5);
 }
 
-/* ---- MÓVIL (pantallas pequeñas) ---- */
+/* Móvil: ajustar posición */
 @media (max-width: 480px) {
     .audio-panel {
-        bottom: 14px;
-        left: 12px;
+        top: 60px;
+        right: 10px;
     }
-
-    .audio-controls {
-        min-width: 186px;
-        max-width: 200px;
-        padding: 12px 14px;
-        border-radius: 10px;
-    }
-
     .audio-toggle-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
-
-    /* Que no tape el HUD de batalla */
-    #battle-screen .audio-panel {
-        bottom: auto;
-        top: 12px;
-        left: 12px;
+    .audio-controls {
+        min-width: 178px;
+        max-width: 196px;
+        padding: 10px 12px;
     }
 }
