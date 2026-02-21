@@ -19,6 +19,15 @@ window.addEventListener('load', () => {
         document.getElementById('loading-screen').classList.add('hidden');
         document.getElementById('main-menu').classList.remove('hidden');
         checkSaveExists();
+        // Cargar CSS del panel de audio dinámicamente
+        const link = document.createElement('link');
+        link.rel = 'stylesheet'; link.href = 'css/audio-panel.css';
+        document.head.appendChild(link);
+        // Música del menú principal (al primer click del usuario)
+        document.addEventListener('click', () => {
+            AUDIO.init(); AUDIO.resume();
+            AUDIO.playTheme('menu');
+        }, { once: true });
     }, 3000);
 });
 
@@ -49,7 +58,17 @@ function showScreen(id) {
         if (el) el.classList.add('hidden');
     });
     const t = document.getElementById(id);
-    if (t) { t.classList.remove('hidden'); t.classList.add('screen-in'); setTimeout(() => t.classList.remove('screen-in'), 400); }
+    if (t) {
+        t.classList.remove('hidden');
+        t.classList.add('screen-in');
+        setTimeout(() => t.classList.remove('screen-in'), 400);
+    }
+    // Música por pantalla
+    if (id === 'main-menu')         AUDIO.playTheme('menu');
+    if (id === 'character-select')  AUDIO.playTheme('menu');
+    if (id === 'game-world')        AUDIO.playTheme('world');
+    if (id === 'zone-screen')       AUDIO.playTheme('world');
+    if (id === 'inventory')         { /* silencio o mantener */ }
 }
 
 // =============================================
@@ -129,6 +148,7 @@ function enterZone(zoneId) {
     if (!zona) return;
     if (state.hero && state.hero.nivel < zona.nivelMin && zoneId !== 'aldea') {
         notify(`¡Necesitas nivel ${zona.nivelMin} para entrar aquí!`);
+        AUDIO.playerHit();
         return;
     }
     state.currentZone = zoneId;
@@ -144,6 +164,7 @@ function enterZone(zoneId) {
     if (mid && !state.misiones[mid]) {
         state.misiones[mid] = { ...GAME_DATA.misiones[mid], activa: true, objetivo: { ...GAME_DATA.misiones[mid].objetivo, actual: 0 } };
         notify(`📜 Nueva misión: ${GAME_DATA.misiones[mid].nombre}`);
+        AUDIO.notification();
         renderQuests();
     }
     showScreen('zone-screen');
@@ -164,10 +185,10 @@ function showNPC() {
         document.getElementById('dialog-text').textContent = `"${texto}"`;
         opts.innerHTML = '';
         if (idx < npc.dialogo.length - 1) {
-            addOpt("Continuar...", () => { idx++; render(npc.dialogo[idx]); });
+            addOpt("Continuar...", () => { AUDIO.click(); idx++; render(npc.dialogo[idx]); });
         } else {
-            addOpt("¡Gracias!", closeDialog);
-            addOpt("¿Tienes algo a la venta?", showShop);
+            addOpt("¡Gracias!", () => { AUDIO.click(); closeDialog(); });
+            addOpt("¿Tienes algo a la venta?", () => { AUDIO.click(); showShop(); });
         }
     }
 
@@ -201,10 +222,11 @@ function showShop() {
 }
 
 function buyItem(id, item) {
-    if (state.hero.oro < item.precio) { notify("¡No tienes suficiente oro!"); return; }
+    if (state.hero.oro < item.precio) { notify("¡No tienes suficiente oro!"); AUDIO.playerHit(); return; }
     state.hero.oro -= item.precio;
     state.inventario[id] = (state.inventario[id] || 0) + 1;
     notify(`Compraste: ${item.icono} ${item.nombre}`);
+    AUDIO.itemPickup();
     updateHUD();
 }
 
@@ -221,12 +243,12 @@ function startBattle() {
 
     state.currentEnemy = {
         id: eid, nombre: base.nombre, icono: base.icono, nivel: nv,
-        hp:  Math.floor(base.hp  * Math.max(0.6, sc)),
-        maxHp: Math.floor(base.hp * Math.max(0.6, sc)),
-        atk: Math.floor(base.atk * Math.max(0.7, sc)),
-        def: Math.floor(base.def * Math.max(0.7, sc)),
-        exp: Math.floor(base.exp * Math.max(0.7, sc)),
-        oro: Math.floor(base.oro * Math.max(0.7, sc))
+        hp:    Math.floor(base.hp  * Math.max(0.6, sc)),
+        maxHp: Math.floor(base.hp  * Math.max(0.6, sc)),
+        atk:   Math.floor(base.atk * Math.max(0.7, sc)),
+        def:   Math.floor(base.def * Math.max(0.7, sc)),
+        exp:   Math.floor(base.exp * Math.max(0.7, sc)),
+        oro:   Math.floor(base.oro * Math.max(0.7, sc))
     };
 
     state.battleActive = true;
@@ -247,6 +269,9 @@ function startBattle() {
     document.getElementById('skill-menu').classList.add('hidden');
     document.getElementById('battle-item-menu').classList.add('hidden');
     setBtns(true);
+
+    // Música de batalla
+    AUDIO.playTheme('battle');
 }
 
 function updateBattleUI() {
@@ -290,7 +315,12 @@ async function battleAction(action) {
         const base = h.atk + (state.heroEffects.bonusAtk || 0);
         let dmg = Math.max(1, calcDmg(base, e.def));
         const crit = Math.random() < 0.15;
-        if (crit) dmg = Math.floor(dmg * 1.8);
+        if (crit) {
+            dmg = Math.floor(dmg * 1.8);
+            AUDIO.critical();
+        } else {
+            AUDIO.attack();
+        }
         e.hp = Math.max(0, e.hp - dmg);
         document.getElementById('enemy-sprite').classList.add('taking-hit');
         setTimeout(() => document.getElementById('enemy-sprite').classList.remove('taking-hit'), 400);
@@ -298,9 +328,11 @@ async function battleAction(action) {
         addLog(crit ? `💥 ¡CRÍTICO! ${h.nombre} golpea por ${dmg}!` : `⚔ ${h.nombre} ataca por ${dmg}.`, crit ? 'critical' : 'player-action');
         acted = true;
     } else if (action === 'flee') {
+        AUDIO.flee();
         if (Math.random() < 0.5) {
             addLog(`💨 ¡${h.nombre} escapó del combate!`, 'player-action');
             await sleep(800);
+            AUDIO.playTheme('world');
             endBattle(false, true);
             return;
         } else {
@@ -311,9 +343,11 @@ async function battleAction(action) {
 
     updateBattleUI();
 
+    // Veneno sobre enemigo
     if (state.enemyEffects.veneno > 0) {
         e.hp = Math.max(0, e.hp - state.enemyEffects.veneno);
         addLog(`☠ Veneno daña por ${state.enemyEffects.veneno}.`, 'skill-action');
+        AUDIO.poison();
         state.enemyEffects.turnosEfecto--;
         if (state.enemyEffects.turnosEfecto <= 0) state.enemyEffects.veneno = 0;
         updateBattleUI();
@@ -326,17 +360,19 @@ async function battleAction(action) {
             state.heroEffects.turnosEfecto--;
             if (state.heroEffects.turnosEfecto <= 0) { state.heroEffects.bonusDef = 0; state.heroEffects.bonusAtk = 0; }
         }
-        if (state.enemyEffects.reduccionAtk > 0) {
-            if (state.enemyEffects.turnosEfecto2 > 0) state.enemyEffects.turnosEfecto2--;
+        if (state.enemyEffects.reduccionAtk > 0 && state.enemyEffects.turnosEfecto2 > 0) {
+            state.enemyEffects.turnosEfecto2--;
             if (state.enemyEffects.turnosEfecto2 <= 0) state.enemyEffects.reduccionAtk = 0;
         }
         await sleep(700);
+        // Turno del enemigo
         const eAtk = Math.max(1, e.atk - (state.enemyEffects.reduccionAtk || 0));
         const eDef = h.def + (state.heroEffects.bonusDef || 0);
         let eDmg = Math.max(1, calcDmg(eAtk, eDef));
         const eCrit = Math.random() < 0.08;
         if (eCrit) eDmg = Math.floor(eDmg * 1.6);
         h.hp = Math.max(0, h.hp - eDmg);
+        AUDIO.playerHit();
         showDmg(eDmg, '#ff6060', true);
         addLog(eCrit ? `💥 ¡${e.nombre} golpe crítico! ${eDmg}!` : `${e.icono} ${e.nombre} ataca por ${eDmg}.`, 'enemy-action');
         updateBattleUI(); updateHUD();
@@ -352,15 +388,27 @@ async function useSkill(skillId) {
     if (!state.battleActive) return;
     const h = state.hero, e = state.currentEnemy;
     const sk = GAME_DATA.habilidades[skillId];
-    if (h.mp < sk.costo) { notify("¡No tienes suficiente MP!"); setBtns(true); return; }
+    if (h.mp < sk.costo) { notify("¡No tienes suficiente MP!"); AUDIO.playerHit(); setBtns(true); return; }
     h.mp -= sk.costo;
     setBtns(false);
 
+    // Sonido según tipo de habilidad
     if (sk.tipo === 'ataque' || sk.tipo === 'magico') {
-        const base = sk.tipo === 'magico' ? h.mag : h.atk;
-        let dmg = Math.max(1, Math.floor((base + (state.heroEffects.bonusAtk||0)) * sk.multiplicador) - Math.floor(e.def * 0.5));
-        if (sk.garantizaCritico || Math.random() < 0.2) { dmg = Math.floor(dmg * 1.5); addLog(`💥 ¡${sk.nombre} CRÍTICO! ${dmg}!`, 'critical'); }
-        else addLog(`✨ ${h.nombre} usa ${sk.nombre}! ${dmg} de daño.`, 'skill-action');
+        let dmg = Math.max(1, Math.floor(((sk.tipo === 'magico' ? h.mag : h.atk) + (state.heroEffects.bonusAtk||0)) * sk.multiplicador) - Math.floor(e.def * 0.5));
+        const isCrit = sk.garantizaCritico || Math.random() < 0.2;
+        if (isCrit) {
+            dmg = Math.floor(dmg * 1.5);
+            AUDIO.critical();
+            addLog(`💥 ¡${sk.nombre} CRÍTICO! ${dmg}!`, 'critical');
+        } else {
+            if (sk.tipo === 'magico') {
+                skillId === 'bola_fuego' ? AUDIO.fireball() : AUDIO.magic();
+            } else {
+                skillId === 'flecha_certera' || skillId === 'tiro_critico' || skillId === 'lluvia_flechas' || skillId === 'flecha_envenenada'
+                    ? AUDIO.arrow() : AUDIO.attack();
+            }
+            addLog(`✨ ${h.nombre} usa ${sk.nombre}! ${dmg} de daño.`, 'skill-action');
+        }
         e.hp = Math.max(0, e.hp - dmg);
         document.getElementById('enemy-sprite').classList.add('taking-hit');
         setTimeout(() => document.getElementById('enemy-sprite').classList.remove('taking-hit'), 400);
@@ -368,6 +416,7 @@ async function useSkill(skillId) {
     } else if (sk.tipo === 'curar') {
         const cura = Math.floor(h.maxHp * sk.porcentaje);
         h.hp = Math.min(h.maxHp, h.hp + cura);
+        AUDIO.heal();
         showDmg(-cura, '#60e080', true);
         addLog(`💚 ${sk.nombre}! Recuperas ${cura} HP.`, 'heal-action');
     } else if (sk.tipo === 'drenar') {
@@ -375,24 +424,29 @@ async function useSkill(skillId) {
         const robo = Math.floor(dmg * 0.5);
         e.hp = Math.max(0, e.hp - dmg);
         h.hp = Math.min(h.maxHp, h.hp + robo);
+        AUDIO.drain();
         showDmg(dmg, '#c080ff', false); showDmg(-robo, '#60e080', true);
         addLog(`🩸 Drenas ${dmg} y recuperas ${robo} HP.`, 'skill-action');
     } else if (sk.tipo === 'veneno') {
         state.enemyEffects.veneno = sk.dañoPorTurno;
         state.enemyEffects.turnosEfecto = sk.turnos;
+        AUDIO.poison();
         addLog(`☠ ${e.nombre} envenenado! ${sk.dañoPorTurno}/turno`, 'skill-action');
     } else if (sk.tipo === 'buff') {
         state.heroEffects.bonusDef = sk.bonusDef || 0;
         state.heroEffects.bonusAtk = sk.bonusAtk || 0;
         state.heroEffects.turnosEfecto = sk.turnos;
+        AUDIO.buff();
         addLog(`⬆ Te fortaleces por ${sk.turnos} turnos!`, 'heal-action');
     } else if (sk.tipo === 'defensa') {
         state.heroEffects.bonusDef = sk.bonusDef;
         state.heroEffects.turnosEfecto = sk.turnos;
+        AUDIO.buff();
         addLog(`🛡 +${sk.bonusDef} DEF por ${sk.turnos} turnos.`, 'heal-action');
     } else if (sk.tipo === 'debuff') {
         state.enemyEffects.reduccionAtk = sk.reduccionAtk;
         state.enemyEffects.turnosEfecto2 = sk.turnos;
+        AUDIO.magic();
         addLog(`🔮 ${e.nombre} debilitado -${sk.reduccionAtk} ATK!`, 'skill-action');
     }
 
@@ -400,10 +454,12 @@ async function useSkill(skillId) {
     if (e.hp <= 0) { await sleep(500); endBattle(true, false); return; }
 
     await sleep(700);
+    // Contraataque enemigo
     const eAtk = Math.max(1, e.atk - (state.enemyEffects.reduccionAtk || 0));
     const eDef = h.def + (state.heroEffects.bonusDef || 0);
     const eDmg = Math.max(1, calcDmg(eAtk, eDef));
     h.hp = Math.max(0, h.hp - eDmg);
+    AUDIO.playerHit();
     showDmg(eDmg, '#ff6060', true);
     addLog(`${e.icono} ${e.nombre} ataca por ${eDmg}.`, 'enemy-action');
     updateBattleUI(); updateHUD();
@@ -420,12 +476,15 @@ function useBattleItem(id) {
         const ant = h.hp; h.hp = Math.min(h.maxHp, h.hp + item.valor);
         showDmg(-(h.hp - ant), '#60e080', true);
         addLog(`🧪 ${item.nombre}: +${h.hp-ant} HP.`, 'heal-action');
+        AUDIO.heal();
     } else if (item.efecto === 'curar_mp') {
         h.mp = Math.min(h.maxMp, h.mp + item.valor);
         addLog(`💧 ${item.nombre}: +${item.valor} MP.`, 'heal-action');
+        AUDIO.heal();
     } else if (item.efecto === 'curar_todo') {
         h.hp = h.maxHp; h.mp = h.maxMp;
         addLog(`✨ ${item.nombre}: ¡HP y MP restaurados!`, 'heal-action');
+        AUDIO.levelUp();
     }
     state.inventario[id]--;
     if (state.inventario[id] <= 0) delete state.inventario[id];
@@ -435,24 +494,31 @@ function useBattleItem(id) {
 function endBattle(victory, fled) {
     state.battleActive = false;
     document.getElementById('battle-screen').classList.add('hidden');
-    if (fled) { setBtns(true); return; }
+    if (fled) { setBtns(true); AUDIO.playTheme('world'); return; }
 
     const h = state.hero, e = state.currentEnemy;
     if (victory) {
+        AUDIO.victory();
+        setTimeout(() => AUDIO.playTheme('world'), 2500);
+
         state.kills[e.id] = (state.kills[e.id] || 0) + 1;
         checkMissions(e.id);
         h.exp += e.exp; h.oro += e.oro;
+
         document.getElementById('result-icon').textContent = '🏆';
         document.getElementById('result-title').textContent = '¡Victoria!';
         document.getElementById('result-desc').textContent = `Derrotaste a ${e.nombre}`;
         let rhtml = `<div class="reward-item">⭐ +${e.exp} EXP</div><div class="reward-item">🪙 +${e.oro} Oro</div>`;
+
         if (Math.random() < 0.25) {
             const keys = Object.keys(GAME_DATA.items).filter(k => GAME_DATA.items[k].tipo === 'consumible');
             const drop = keys[Math.floor(Math.random() * keys.length)];
             state.inventario[drop] = (state.inventario[drop] || 0) + 1;
             rhtml += `<div class="reward-item">${GAME_DATA.items[drop].icono} ¡${GAME_DATA.items[drop].nombre} encontrado!</div>`;
+            AUDIO.itemPickup();
         }
         document.getElementById('rewards-block').innerHTML = rhtml;
+
         const lvlBlock = document.getElementById('level-up-block');
         const xpNeed = GAME_DATA.expParaNivel(h.nivel);
         if (h.exp >= xpNeed) {
@@ -464,11 +530,15 @@ function endBattle(victory, fled) {
             h.mag += cls.magPerLevel; h.agi += cls.agiPerLevel;
             lvlBlock.classList.remove('hidden');
             document.getElementById('level-up-details').textContent = `Nivel ${h.nivel}! HP+${cls.hpPerLevel} ATK+${cls.atkPerLevel} DEF+${cls.defPerLevel}`;
+            setTimeout(() => AUDIO.levelUp(), 600);
             unlockZones();
         } else {
             lvlBlock.classList.add('hidden');
         }
     } else {
+        // Derrota
+        AUDIO.defeat();
+        setTimeout(() => AUDIO.playTheme('world'), 2000);
         document.getElementById('result-icon').textContent = '💀';
         document.getElementById('result-title').textContent = 'Has caído...';
         document.getElementById('result-desc').textContent = 'Pero los héroes no mueren, solo descansan.';
@@ -504,6 +574,7 @@ function completeMission(id) {
     state.hero.exp += r.exp; state.hero.oro += r.oro;
     if (r.item) state.inventario[r.item] = (state.inventario[r.item] || 0) + 1;
     notify(`🎉 ¡Misión: ${m.nombre}! +${r.exp} EXP, +${r.oro} Oro`);
+    AUDIO.notification();
     updateHUD();
 }
 
@@ -604,22 +675,29 @@ function renderInventory() {
         const d = document.createElement('div');
         d.className = 'item-slot'; d.title = item.descripcion;
         d.innerHTML = `<div class="item-icon">${item.icono}</div><div class="item-name">${item.nombre}</div><div class="item-qty">x${qty}</div>`;
-        d.onclick = () => useItemFromInventory(id, item);
+        d.onclick = () => { AUDIO.click(); useItemFromInventory(id, item); };
         grid.appendChild(d);
     });
     if (!any) grid.innerHTML = '<p style="color:var(--text-dim);font-style:italic;padding:20px;">Inventario vacío.</p>';
     const eq = state.equipado;
-    document.getElementById('eq-weapon').textContent    = eq.weapon    ? `${GAME_DATA.items[eq.weapon].icono} ${GAME_DATA.items[eq.weapon].nombre}`     : 'Ninguna';
-    document.getElementById('eq-armor').textContent     = eq.armor     ? `${GAME_DATA.items[eq.armor].icono} ${GAME_DATA.items[eq.armor].nombre}`       : 'Ninguna';
-    document.getElementById('eq-accessory').textContent = eq.accessory ? `${GAME_DATA.items[eq.accessory].icono} ${GAME_DATA.items[eq.accessory].nombre}` : 'Ninguno';
+    document.getElementById('eq-weapon').textContent    = eq.weapon    ? `${GAME_DATA.items[eq.weapon].icono} ${GAME_DATA.items[eq.weapon].nombre}`       : 'Ninguna';
+    document.getElementById('eq-armor').textContent     = eq.armor     ? `${GAME_DATA.items[eq.armor].icono} ${GAME_DATA.items[eq.armor].nombre}`           : 'Ninguna';
+    document.getElementById('eq-accessory').textContent = eq.accessory ? `${GAME_DATA.items[eq.accessory].icono} ${GAME_DATA.items[eq.accessory].nombre}`   : 'Ninguno';
 }
 
 function useItemFromInventory(id, item) {
     const h = state.hero;
     if (item.tipo === 'consumible') {
-        if (item.efecto === 'curar_hp') { const a = h.hp; h.hp = Math.min(h.maxHp, h.hp+item.valor); notify(`${item.icono} +${h.hp-a} HP`); }
-        else if (item.efecto === 'curar_mp') { h.mp = Math.min(h.maxMp, h.mp+item.valor); notify(`${item.icono} +${item.valor} MP`); }
-        else if (item.efecto === 'curar_todo') { h.hp=h.maxHp; h.mp=h.maxMp; notify(`${item.icono} ¡HP y MP restaurados!`); }
+        if (item.efecto === 'curar_hp') {
+            const a = h.hp; h.hp = Math.min(h.maxHp, h.hp+item.valor);
+            notify(`${item.icono} +${h.hp-a} HP`); AUDIO.heal();
+        } else if (item.efecto === 'curar_mp') {
+            h.mp = Math.min(h.maxMp, h.mp+item.valor);
+            notify(`${item.icono} +${item.valor} MP`); AUDIO.heal();
+        } else if (item.efecto === 'curar_todo') {
+            h.hp=h.maxHp; h.mp=h.maxMp;
+            notify(`${item.icono} ¡HP y MP restaurados!`); AUDIO.levelUp();
+        }
         state.inventario[id]--;
         if (state.inventario[id] <= 0) delete state.inventario[id];
         updateHUD(); renderInventory();
@@ -648,6 +726,7 @@ function equipItem(id, item) {
     state.equipado[slot] = id;
     state.inventario[id]--;
     if (state.inventario[id] <= 0) delete state.inventario[id];
+    AUDIO.itemPickup();
     notify(`✅ Equipado: ${item.icono} ${item.nombre}`);
     updateHUD(); renderInventory();
 }
@@ -666,12 +745,13 @@ function saveGame() {
         misiones: state.misiones, inventario: state.inventario,
         equipado: state.equipado, kills: state.kills
     }));
+    AUDIO.notification();
     notify('💾 Partida guardada.');
 }
 
 function loadGame() {
     const raw = localStorage.getItem('cronica_save');
-    if (!raw) { notify('No hay partida guardada.'); return; }
+    if (!raw) { notify('No hay partida guardada.'); AUDIO.playerHit(); return; }
     const d = JSON.parse(raw);
     state.hero        = d.hero;
     state.currentZone = d.currentZone;
@@ -681,6 +761,7 @@ function loadGame() {
     state.kills       = d.kills || {};
     showScreen('game-world');
     updateHUD(); renderQuests(); unlockZones();
+    AUDIO.select();
     notify(`✅ Bienvenido de vuelta, ${state.hero.nombre}!`);
 }
 
