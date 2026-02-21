@@ -2,11 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Crónicas del Reino Olvidado</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/audio-panel.css">
 </head>
 <body>
 
@@ -55,7 +58,7 @@
     </div>
     <div class="name-input-row">
         <label>Nombre del Héroe:</label>
-        <input type="text" id="hero-name" placeholder="Escribe tu nombre..." maxlength="20">
+        <input type="text" id="hero-name" placeholder="Escribe tu nombre..." maxlength="20" autocomplete="off">
     </div>
     <div class="classes-grid">
         <div class="class-card" onclick="AUDIO.select(); selectClass('guerrero')" data-class="guerrero">
@@ -320,26 +323,23 @@
 
 <!-- PANEL DE AUDIO FLOTANTE -->
 <div class="audio-panel" id="audio-panel">
-    <button class="audio-toggle-btn" onclick="toggleAudioPanel()" title="Ajustes de sonido">🎵</button>
+    <button class="audio-toggle-btn"
+        id="audio-toggle-btn"
+        title="Ajustes de sonido"
+        aria-label="Control de sonido">🎵</button>
     <div class="audio-controls hidden" id="audio-controls">
         <div class="audio-title">🎵 Sonido</div>
         <div class="audio-row">
-            <button class="audio-btn active" id="btn-music" onclick="toggleMusicBtn()">
-                <span>🎶</span> Música
-            </button>
-            <button class="audio-btn active" id="btn-sfx" onclick="toggleSFXBtn()">
-                <span>🔊</span> Efectos
-            </button>
+            <button class="audio-btn active" id="btn-music">🎶 Música</button>
+            <button class="audio-btn active" id="btn-sfx">🔊 FX</button>
         </div>
         <div class="audio-slider-row">
             <span>🎶</span>
-            <input type="range" min="0" max="100" value="70" class="audio-slider" id="slider-music"
-                oninput="AUDIO.setMusicVolume(this.value/100)">
+            <input type="range" min="0" max="100" value="70" class="audio-slider" id="slider-music">
         </div>
         <div class="audio-slider-row">
             <span>🔊</span>
-            <input type="range" min="0" max="100" value="70" class="audio-slider" id="slider-sfx"
-                oninput="AUDIO.setSFXVolume(this.value/100)">
+            <input type="range" min="0" max="100" value="70" class="audio-slider" id="slider-sfx">
         </div>
     </div>
 </div>
@@ -348,22 +348,60 @@
 <script src="js/data.js"></script>
 <script src="js/game.js"></script>
 <script>
-function toggleAudioPanel() {
-    AUDIO.init(); AUDIO.resume(); AUDIO.click();
-    document.getElementById('audio-controls').classList.toggle('hidden');
-}
-function toggleMusicBtn() {
-    const on = AUDIO.toggleMusic();
-    const btn = document.getElementById('btn-music');
-    btn.classList.toggle('active', on);
-    btn.classList.toggle('muted', !on);
-}
-function toggleSFXBtn() {
-    const on = AUDIO.toggleSFX();
-    const btn = document.getElementById('btn-sfx');
-    btn.classList.toggle('active', on);
-    btn.classList.toggle('muted', !on);
-}
+(function() {
+    const toggleBtn  = document.getElementById('audio-toggle-btn');
+    const controls   = document.getElementById('audio-controls');
+    const btnMusic   = document.getElementById('btn-music');
+    const btnSFX     = document.getElementById('btn-sfx');
+    const sliderM    = document.getElementById('slider-music');
+    const sliderS    = document.getElementById('slider-sfx');
+
+    // Abrir/cerrar panel — funciona con click y touch
+    function openPanel(e) {
+        e.preventDefault();
+        AUDIO.init(); AUDIO.resume();
+        AUDIO.click();
+        controls.classList.toggle('hidden');
+    }
+    toggleBtn.addEventListener('click', openPanel);
+    toggleBtn.addEventListener('touchend', openPanel, { passive: false });
+
+    // Música on/off
+    function onMusicToggle(e) {
+        e.preventDefault();
+        const on = AUDIO.toggleMusic();
+        btnMusic.classList.toggle('active', on);
+        btnMusic.classList.toggle('muted', !on);
+    }
+    btnMusic.addEventListener('click', onMusicToggle);
+    btnMusic.addEventListener('touchend', onMusicToggle, { passive: false });
+
+    // SFX on/off
+    function onSFXToggle(e) {
+        e.preventDefault();
+        const on = AUDIO.toggleSFX();
+        btnSFX.classList.toggle('active', on);
+        btnSFX.classList.toggle('muted', !on);
+    }
+    btnSFX.addEventListener('click', onSFXToggle);
+    btnSFX.addEventListener('touchend', onSFXToggle, { passive: false });
+
+    // Sliders — input funciona bien en móvil con touch
+    sliderM.addEventListener('input', function() {
+        AUDIO.init(); AUDIO.resume();
+        AUDIO.setMusicVolume(this.value / 100);
+    });
+    sliderS.addEventListener('input', function() {
+        AUDIO.init(); AUDIO.resume();
+        AUDIO.setSFXVolume(this.value / 100);
+    });
+
+    // Cerrar panel al tocar fuera
+    document.addEventListener('touchstart', function(e) {
+        const panel = document.getElementById('audio-panel');
+        if (!panel.contains(e.target)) controls.classList.add('hidden');
+    }, { passive: true });
+})();
 </script>
 </body>
 </html>
