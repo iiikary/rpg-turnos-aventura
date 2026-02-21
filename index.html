@@ -33,13 +33,13 @@
             <p class="subtitle">Un mundo de magia, honor y peligro te aguarda</p>
         </div>
         <div class="menu-buttons">
-            <button class="btn-menu btn-primary" onclick="showScreen('character-select')">
+            <button class="btn-menu btn-primary" onclick="AUDIO.select(); showScreen('character-select')">
                 <span class="btn-icon">⚔</span> Nueva Partida
             </button>
-            <button class="btn-menu btn-secondary" onclick="loadGame()" id="btn-continue">
+            <button class="btn-menu btn-secondary" onclick="AUDIO.click(); loadGame()" id="btn-continue">
                 <span class="btn-icon">📜</span> Continuar
             </button>
-            <button class="btn-menu btn-tertiary" onclick="showScreen('credits')">
+            <button class="btn-menu btn-tertiary" onclick="AUDIO.click(); showScreen('credits')">
                 <span class="btn-icon">✦</span> Créditos
             </button>
         </div>
@@ -49,7 +49,7 @@
 <!-- SELECCIÓN DE PERSONAJE -->
 <div id="character-select" class="hidden screen-dark">
     <div class="screen-header">
-        <button class="btn-back" onclick="showScreen('main-menu')">← Volver</button>
+        <button class="btn-back" onclick="AUDIO.click(); showScreen('main-menu')">← Volver</button>
         <h2 class="screen-title">Elige tu Destino</h2>
         <p class="screen-sub">Cada camino conduce a glorias distintas</p>
     </div>
@@ -58,7 +58,7 @@
         <input type="text" id="hero-name" placeholder="Escribe tu nombre..." maxlength="20">
     </div>
     <div class="classes-grid">
-        <div class="class-card" onclick="selectClass('guerrero')" data-class="guerrero">
+        <div class="class-card" onclick="AUDIO.select(); selectClass('guerrero')" data-class="guerrero">
             <div class="class-art">🛡️</div>
             <div class="class-glow guerrero-glow"></div>
             <h3>Guerrero</h3>
@@ -71,7 +71,7 @@
             </div>
             <div class="class-skills"><span>Golpe Brutal</span><span>Escudo Férreo</span><span>Furia Berserker</span></div>
         </div>
-        <div class="class-card" onclick="selectClass('mago')" data-class="mago">
+        <div class="class-card" onclick="AUDIO.select(); selectClass('mago')" data-class="mago">
             <div class="class-art">🔮</div>
             <div class="class-glow mago-glow"></div>
             <h3>Mago</h3>
@@ -84,7 +84,7 @@
             </div>
             <div class="class-skills"><span>Bola de Fuego</span><span>Rayo Arcano</span><span>Tormenta Mágica</span></div>
         </div>
-        <div class="class-card" onclick="selectClass('arquero')" data-class="arquero">
+        <div class="class-card" onclick="AUDIO.select(); selectClass('arquero')" data-class="arquero">
             <div class="class-art">🏹</div>
             <div class="class-glow arquero-glow"></div>
             <h3>Arquero</h3>
@@ -97,7 +97,7 @@
             </div>
             <div class="class-skills"><span>Flecha Certera</span><span>Lluvia de Flechas</span><span>Tiro Crítico</span></div>
         </div>
-        <div class="class-card" onclick="selectClass('paladin')" data-class="paladin">
+        <div class="class-card" onclick="AUDIO.select(); selectClass('paladin')" data-class="paladin">
             <div class="class-art">✨</div>
             <div class="class-glow paladin-glow"></div>
             <h3>Paladín</h3>
@@ -110,7 +110,7 @@
             </div>
             <div class="class-skills"><span>Golpe Sagrado</span><span>Luz Divina</span><span>Aura Bendita</span></div>
         </div>
-        <div class="class-card" onclick="selectClass('nigromante')" data-class="nigromante">
+        <div class="class-card" onclick="AUDIO.select(); selectClass('nigromante')" data-class="nigromante">
             <div class="class-art">💀</div>
             <div class="class-glow nigromante-glow"></div>
             <h3>Nigromante</h3>
@@ -123,7 +123,7 @@
             </div>
             <div class="class-skills"><span>Drenar Vida</span><span>Maldición</span><span>Ejército Muerto</span></div>
         </div>
-        <div class="class-card" onclick="selectClass('asesino')" data-class="asesino">
+        <div class="class-card" onclick="AUDIO.select(); selectClass('asesino')" data-class="asesino">
             <div class="class-art">🗡️</div>
             <div class="class-glow asesino-glow"></div>
             <h3>Asesino</h3>
@@ -138,7 +138,7 @@
         </div>
     </div>
     <div class="select-confirm hidden" id="confirm-block">
-        <button class="btn-confirm" onclick="startGame()">⚔ Comenzar Aventura ⚔</button>
+        <button class="btn-confirm" onclick="AUDIO.select(); startGame()">⚔ Comenzar Aventura ⚔</button>
     </div>
 </div>
 
@@ -159,30 +159,30 @@
         </div>
         <div class="hud-gold"><span class="gold-icon">🪙</span><span id="gold-val">0</span> oro</div>
         <div class="hud-actions">
-            <button class="hud-btn" onclick="showScreen('inventory');renderInventory()">🎒 Inventario</button>
-            <button class="hud-btn" onclick="saveGame()">💾 Guardar</button>
+            <button class="hud-btn" onclick="AUDIO.click(); showScreen('inventory');renderInventory()">🎒 Inventario</button>
+            <button class="hud-btn" onclick="AUDIO.click(); saveGame()">💾 Guardar</button>
         </div>
     </div>
     <div class="world-map">
         <div class="map-title">🗺 El Reino de Valdoria</div>
         <div class="map-container">
             <div class="map-bg"></div>
-            <div class="region region-village active-region" onclick="enterZone('aldea')" style="top:60%;left:45%">
+            <div class="region region-village active-region" onclick="AUDIO.click(); enterZone('aldea')" style="top:60%;left:45%">
                 <div class="region-icon">🏘️</div><div class="region-name">Aldea de Comienzo</div><div class="region-level">Nivel 1-3</div>
             </div>
-            <div class="region" onclick="enterZone('bosque')" style="top:40%;left:25%" id="zone-bosque">
+            <div class="region" onclick="AUDIO.click(); enterZone('bosque')" style="top:40%;left:25%" id="zone-bosque">
                 <div class="region-icon">🌲</div><div class="region-name">Bosque Oscuro</div><div class="region-level">Nivel 2-5</div>
             </div>
-            <div class="region region-locked" onclick="enterZone('minas')" style="top:35%;left:60%" id="zone-minas">
+            <div class="region region-locked" onclick="AUDIO.click(); enterZone('minas')" style="top:35%;left:60%" id="zone-minas">
                 <div class="region-icon">⛏️</div><div class="region-name">Minas Malditas</div><div class="region-level">Nivel 4-8</div><div class="lock-icon">🔒</div>
             </div>
-            <div class="region region-locked" onclick="enterZone('castillo')" style="top:20%;left:45%" id="zone-castillo">
+            <div class="region region-locked" onclick="AUDIO.click(); enterZone('castillo')" style="top:20%;left:45%" id="zone-castillo">
                 <div class="region-icon">🏰</div><div class="region-name">Castillo del Rey</div><div class="region-level">Nivel 7-12</div><div class="lock-icon">🔒</div>
             </div>
-            <div class="region region-locked" onclick="enterZone('volcan')" style="top:15%;left:20%" id="zone-volcan">
+            <div class="region region-locked" onclick="AUDIO.click(); enterZone('volcan')" style="top:15%;left:20%" id="zone-volcan">
                 <div class="region-icon">🌋</div><div class="region-name">Volcán Eterno</div><div class="region-level">Nivel 10-15</div><div class="lock-icon">🔒</div>
             </div>
-            <div class="region region-locked" onclick="enterZone('abismo')" style="top:10%;left:70%" id="zone-abismo">
+            <div class="region region-locked" onclick="AUDIO.click(); enterZone('abismo')" style="top:10%;left:70%" id="zone-abismo">
                 <div class="region-icon">🕳️</div><div class="region-name">El Abismo Final</div><div class="region-level">Nivel 15-20</div><div class="lock-icon">🔒</div>
             </div>
         </div>
@@ -197,16 +197,16 @@
 <!-- ZONA -->
 <div id="zone-screen" class="hidden">
     <div class="zone-header">
-        <button class="btn-back" onclick="showScreen('game-world')">← Mapa</button>
+        <button class="btn-back" onclick="AUDIO.click(); showScreen('game-world')">← Mapa</button>
         <h2 id="zone-title">Zona</h2>
         <p id="zone-desc">Descripción...</p>
     </div>
     <div class="zone-content">
         <div class="zone-illustration" id="zone-art">🌲</div>
         <div class="zone-actions">
-            <button class="zone-btn" onclick="startBattle()">⚔ Explorar y Combatir</button>
-            <button class="zone-btn" onclick="showNPC()">💬 Hablar con NPC</button>
-            <button class="zone-btn secondary" onclick="showScreen('game-world')">🗺 Volver al Mapa</button>
+            <button class="zone-btn" onclick="AUDIO.battleStart(); startBattle()">⚔ Explorar y Combatir</button>
+            <button class="zone-btn" onclick="AUDIO.click(); showNPC()">💬 Hablar con NPC</button>
+            <button class="zone-btn secondary" onclick="AUDIO.click(); showScreen('game-world')">🗺 Volver al Mapa</button>
         </div>
         <div class="zone-enemies"><h4>Enemigos en esta zona:</h4><div id="zone-enemy-list"></div></div>
     </div>
@@ -240,12 +240,12 @@
         <div class="battle-actions" id="battle-actions">
             <div class="action-row">
                 <button class="action-btn attack-btn" onclick="battleAction('attack')"><span class="action-icon">⚔</span><span>Atacar</span></button>
-                <button class="action-btn skill-btn" onclick="showSkills()"><span class="action-icon">✨</span><span>Habilidades</span></button>
-                <button class="action-btn item-btn" onclick="showBattleItems()"><span class="action-icon">🧪</span><span>Objetos</span></button>
+                <button class="action-btn skill-btn" onclick="AUDIO.click(); showSkills()"><span class="action-icon">✨</span><span>Habilidades</span></button>
+                <button class="action-btn item-btn" onclick="AUDIO.click(); showBattleItems()"><span class="action-icon">🧪</span><span>Objetos</span></button>
                 <button class="action-btn flee-btn" onclick="battleAction('flee')"><span class="action-icon">💨</span><span>Huir</span></button>
             </div>
-            <div class="skill-menu hidden" id="skill-menu"><div id="skill-list"></div><button class="btn-small cancel-btn" onclick="hideSkills()">← Cancelar</button></div>
-            <div class="item-menu hidden" id="battle-item-menu"><div id="battle-item-list"></div><button class="btn-small cancel-btn" onclick="hideBattleItems()">← Cancelar</button></div>
+            <div class="skill-menu hidden" id="skill-menu"><div id="skill-list"></div><button class="btn-small cancel-btn" onclick="AUDIO.click(); hideSkills()">← Cancelar</button></div>
+            <div class="item-menu hidden" id="battle-item-menu"><div id="battle-item-list"></div><button class="btn-small cancel-btn" onclick="AUDIO.click(); hideBattleItems()">← Cancelar</button></div>
         </div>
     </div>
 </div>
@@ -261,14 +261,14 @@
             <div class="level-up-banner">⭐ ¡SUBISTE DE NIVEL! ⭐</div>
             <p id="level-up-details"></p>
         </div>
-        <button class="btn-confirm" onclick="closeBattleResult()">Continuar</button>
+        <button class="btn-confirm" onclick="AUDIO.click(); closeBattleResult()">Continuar</button>
     </div>
 </div>
 
 <!-- INVENTARIO -->
 <div id="inventory" class="hidden screen-dark">
     <div class="screen-header">
-        <button class="btn-back" onclick="closeInventory()">← Volver</button>
+        <button class="btn-back" onclick="AUDIO.click(); closeInventory()">← Volver</button>
         <h2 class="screen-title">🎒 Inventario</h2>
     </div>
     <div class="inventory-layout">
@@ -304,11 +304,12 @@
 <!-- CRÉDITOS -->
 <div id="credits" class="hidden screen-dark">
     <div class="credits-content">
-        <button class="btn-back" onclick="showScreen('main-menu')">← Volver</button>
+        <button class="btn-back" onclick="AUDIO.click(); showScreen('main-menu')">← Volver</button>
         <div class="credits-title">✦ Créditos ✦</div>
         <p>Crónicas del Reino Olvidado</p>
         <p>Un RPG por turnos de fantasía medieval</p>
         <p>Desarrollado con HTML5, CSS3 y JavaScript</p>
+        <p>Música procedural generada con Web Audio API</p>
         <p>Guardado en LocalStorage — sin base de datos</p>
         <p>© 2024 — Libre para todos ⚔️</p>
     </div>
@@ -317,7 +318,52 @@
 <!-- NOTIFICACIÓN -->
 <div class="notification hidden" id="notification"><span id="notification-text"></span></div>
 
+<!-- PANEL DE AUDIO FLOTANTE -->
+<div class="audio-panel" id="audio-panel">
+    <button class="audio-toggle-btn" onclick="toggleAudioPanel()" title="Ajustes de sonido">🎵</button>
+    <div class="audio-controls hidden" id="audio-controls">
+        <div class="audio-title">🎵 Sonido</div>
+        <div class="audio-row">
+            <button class="audio-btn active" id="btn-music" onclick="toggleMusicBtn()">
+                <span>🎶</span> Música
+            </button>
+            <button class="audio-btn active" id="btn-sfx" onclick="toggleSFXBtn()">
+                <span>🔊</span> Efectos
+            </button>
+        </div>
+        <div class="audio-slider-row">
+            <span>🎶</span>
+            <input type="range" min="0" max="100" value="70" class="audio-slider" id="slider-music"
+                oninput="AUDIO.setMusicVolume(this.value/100)">
+        </div>
+        <div class="audio-slider-row">
+            <span>🔊</span>
+            <input type="range" min="0" max="100" value="70" class="audio-slider" id="slider-sfx"
+                oninput="AUDIO.setSFXVolume(this.value/100)">
+        </div>
+    </div>
+</div>
+
+<script src="js/audio.js"></script>
 <script src="js/data.js"></script>
 <script src="js/game.js"></script>
+<script>
+function toggleAudioPanel() {
+    AUDIO.init(); AUDIO.resume(); AUDIO.click();
+    document.getElementById('audio-controls').classList.toggle('hidden');
+}
+function toggleMusicBtn() {
+    const on = AUDIO.toggleMusic();
+    const btn = document.getElementById('btn-music');
+    btn.classList.toggle('active', on);
+    btn.classList.toggle('muted', !on);
+}
+function toggleSFXBtn() {
+    const on = AUDIO.toggleSFX();
+    const btn = document.getElementById('btn-sfx');
+    btn.classList.toggle('active', on);
+    btn.classList.toggle('muted', !on);
+}
+</script>
 </body>
 </html>
