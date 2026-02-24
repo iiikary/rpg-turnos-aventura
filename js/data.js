@@ -44,58 +44,93 @@ const GAME_DATA = {
         aldea: {
             nombre:"Aldea de Comienzo", icono:"🏘️", fondo:"village-bg",
             descripcion:"Un pacífico pueblo rodeado de colinas. Algo oscuro se acerca...",
-            nivelMin:1, enemigos:["lobo_salvaje","goblin","rata_gigante","bandido"],
+            nivelMin:1, enemigos:["lobo_salvaje","goblin","rata_gigante","bandido","aldeano_zombie","arquero_bandido"],
             npc:{nombre:"Anciano Erwin", icono:"👴", dialogo:["¡Bienvenido, joven aventurero! Este reino lleva décadas sufriendo...","El Rey Oscuro despertó hace un año y sus hordas avanzan desde el norte.","Necesitamos héroes valientes. ¿Aceptas la misión?"]},
             misionId:"mision_aldea_1"
         },
         bosque: {
             nombre:"Bosque Oscuro", icono:"🌲", fondo:"forest-bg",
             descripcion:"Niebla espesa cubre los árboles retorcidos. Ojos brillan en la oscuridad.",
-            nivelMin:2, enemigos:["lobo_sombra","troll_arbol","hada_corrompida","araña_gigante"],
+            nivelMin:2, enemigos:["lobo_sombra","troll_arbol","hada_corrompida","araña_gigante","duende_bosque","murcielago_gigante","serpiente_bosque"],
             npc:{nombre:"Druida Sylas", icono:"🧙", dialogo:["Estos bosques eran sagrados... Ahora la oscuridad los ha corrompido.","Si derrotas las criaturas, quizás el bosque pueda sanar.","Ten cuidado. Muchos aventureros se han perdido aquí para siempre."]},
             misionId:"mision_bosque_1"
         },
         catacumbas: {
             nombre:"Catacumbas Antiguas", icono:"🏚", fondo:"dungeon-bg",
             descripcion:"Cavernas subterráneas llenas de huesos y magia oscura. Los muertos no descansan aquí.",
-            nivelMin:3, enemigos:["muerto_viviente","vampire_menor","bandido_elite","araña_gigante"],
+            nivelMin:3, enemigos:["muerto_viviente","vampire_menor","bandido_elite","araña_gigante","esqueleto_guerrero","zombie_armado","espectro_oscuro"],
             npc:{nombre:"Monje Baldric", icono:"⛪", dialogo:["Estas catacumbas fueron un cementerio sagrado.","Algo profanó los cuerpos y los levantó. Necesito que los purges.","Los vampiros son especialmente peligrosos. ¡Ve con cuidado!"]},
             misionId:"mision_catacumbas_1"
         },
         minas: {
             nombre:"Minas Malditas", icono:"⛏️", fondo:"dungeon-bg",
             descripcion:"Cavernas kilométricas bajo tierra. Criaturas sin nombre merodean.",
-            nivelMin:4, enemigos:["esqueleto_minero","golem_piedra","espectro","ogro_menor"],
+            nivelMin:4, enemigos:["esqueleto_minero","golem_piedra","espectro","ogro_menor","minero_maldito","gusano_roca","troll_minas"],
             npc:{nombre:"Enano Dorak", icono:"⛏", dialogo:["¡Por la barba de mis ancestros! Estas minas eran nuestro hogar.","Un antiguo golem despertó y mató a todos mis compañeros.","Si lo detienes, compartiré los secretos de nuestro tesoro."]},
             misionId:"mision_minas_1"
         },
         castillo: {
             nombre:"Castillo del Rey", icono:"🏰", fondo:"dungeon-bg",
             descripcion:"Otrora glorioso, ahora corroído por la magia oscura. El trono espera.",
-            nivelMin:7, enemigos:["caballero_oscuro","mago_negro","guardian_castillo","manticora"],
+            nivelMin:7, enemigos:["caballero_oscuro","mago_negro","guardian_castillo","manticora","arquero_oscuro","vampiro_noble","bestia_castillo"],
             npc:{nombre:"Capitán Valdris", icono:"⚔", dialogo:["El rey fue corrompido por el Orbe Oscuro hace seis meses.","Los caballeros leales fuimos expulsados. El reino está perdido... sin tu ayuda.","Recupera el Orbe y podremos salvar al rey."]},
             misionId:"mision_castillo_1"
         },
         torre_mago: {
             nombre:"Torre del Mago Loco", icono:"🗼", fondo:"dungeon-bg",
             descripcion:"Una torre retorcida donde experimentos mágicos fallidos crearon monstruos terribles.",
-            nivelMin:8, enemigos:["hidra","golem_magico","quimera","mago_negro"],
+            nivelMin:8, enemigos:["hidra","golem_magico","quimera","mago_negro","homunculus","elemental_caos","familiar_mago"],
             npc:{nombre:"Aprendiz Lena", icono:"🎓", dialogo:["Mi maestro perdió la cordura experimentando con magia prohibida.","Creó criaturas horribles que ahora pueblan la torre.","Si liberas la torre, los libros de hechizos son tuyos."]},
             misionId:"mision_torre_1"
         },
         volcan: {
             nombre:"Volcán Eterno", icono:"🌋", fondo:"dungeon-bg",
             descripcion:"Lava ardiente y demonios de fuego. El calor es insoportable.",
-            nivelMin:10, enemigos:["demonio_fuego","elemental_lava","dragon_llamas","quimera"],
+            nivelMin:10, enemigos:["demonio_fuego","elemental_lava","dragon_llamas","quimera","serpiente_fuego","titan_roca","guardian_volcan"],
             npc:{nombre:"Pitonisa Vera", icono:"🔮", dialogo:["El Dragón de Fuego duerme en el corazón del volcán.","Su escama es necesaria para forjar la Espada del Destino.","Solo el elegido puede enfrentarse a él y sobrevivir."]},
             misionId:"mision_volcan_1"
         },
         abismo: {
             nombre:"El Abismo Final", icono:"🕳️", fondo:"dungeon-bg",
             descripcion:"El dominio del Rey Oscuro. Aquí termina toda aventura... o comienza la leyenda.",
-            nivelMin:15, enemigos:["sombra_eterna","angel_caido","lich","rey_oscuro"],
+            nivelMin:15, enemigos:["sombra_eterna","angel_caido","lich","rey_oscuro","demonio_abismo","vampiro_anciano","caos_encarnado"],
             npc:{nombre:"Espíritu Antiguo", icono:"👻", dialogo:["Has llegado hasta aquí. Pocos lo logran.","El Rey Oscuro es casi invencible. Solo con la Espada del Destino puedes vencerlo.","El destino del reino... del mundo... está en tus manos."]},
             misionId:"mision_abismo_1"
+        },
+        pantanos: {
+            nombre:"Pantanos Malditos", icono:"🌿", fondo:"dungeon-bg",
+            descripcion:"Aguas oscuras y cieno ponzoñoso. Criaturas putrefactas acechan bajo la superficie.",
+            nivelMin:5, enemigos:["serpiente_venenosa","sapo_gigante","bruja_pantano","muerto_ahogado","caiman_corrupto","planta_carnivora","fantasma_pantano"],
+            npc:{nombre:"Ermitaño Gorn", icono:"🧙", dialogo:["Estos pantanos eran hermosos hace mucho tiempo...","Un hechizo corrompió sus aguas y convirtió a sus habitantes en monstruos.","Si purificas el pantano, te daré acceso a mi colección de armas."]},
+            misionId:"mision_pantanos_1"
+        },
+        ruinas: {
+            nombre:"Ruinas del Imperio", icono:"🏛️", fondo:"dungeon-bg",
+            descripcion:"Vestigios de una civilización perdida. Los guardianes de piedra aún protegen sus secretos.",
+            nivelMin:6, enemigos:["golem_antiguo","centinela_runa","druida_oscuro","bestia_ruinas","guerrero_antiguo","sacerdote_runa","golem_arcano"],
+            npc:{nombre:"Arqueóloga Lyra", icono:"📜", dialogo:["Este imperio cayó hace mil años por culpa de la magia prohibida.","Sus guardianes aún cumplen su misión aunque no haya nada que proteger.","Hay tesoros invaluables enterrados aquí. ¡Ayúdame a despejar el camino!"]},
+            misionId:"mision_ruinas_1"
+        },
+        tundra: {
+            nombre:"Tundra Glacial", icono:"🏔️", fondo:"dungeon-bg",
+            descripcion:"Ventiscas eternas y hielo antiguo. Las bestias del frío no conocen la piedad.",
+            nivelMin:9, enemigos:["lobo_hielo","oso_glacial","elemental_hielo","yeti","tigre_siberiano","aguila_tormenta","gigante_hielo"],
+            npc:{nombre:"Chamán Bork", icono:"⛄", dialogo:["El espíritu del hielo fue corrompido por el Rey Oscuro.","Ahora las bestias atacan nuestras aldeas sin descanso.","Derrota suficientes criaturas y el espíritu del frío podría recuperarse."]},
+            misionId:"mision_tundra_1"
+        },
+        desierto: {
+            nombre:"Desierto de Cenizas", icono:"🏜️", fondo:"dungeon-bg",
+            descripcion:"Arena negra y calor sofocante. Criaturas del desierto corrupto merodean sin fin.",
+            nivelMin:12, enemigos:["escorpion_gigante","momia","elemental_arena","serpiente_desierto","faraon_oscuro","bestia_desierto","escarabajo_sagrado"],
+            npc:{nombre:"Mercader Hassim", icono:"🌵", dialogo:["Este desierto era verde hace siglos... ahora solo hay ceniza y muerte.","Las momias de los faraones olvidados caminan bajo el sol negro.","Ayúdame a cruzar estas tierras y compartiré mi mercancía más valiosa."]},
+            misionId:"mision_desierto_1"
+        },
+        santuario: {
+            nombre:"Santuario Prohibido", icono:"⛩️", fondo:"dungeon-bg",
+            descripcion:"Un lugar sagrado profanado. Los guardianes celestiales caídos sirven al oscuro.",
+            nivelMin:14, enemigos:["guardian_sagrado","angel_corrupto","demonio_luz","semidios_caido","oraculo_corrompido","arquero_celestial","titan_sagrado"],
+            npc:{nombre:"Oráculo Eterno", icono:"✨", dialogo:["Este santuario era el último bastión de la luz en el mundo.","El Rey Oscuro corrompió incluso a los ángeles guardianes.","Solo el más valioso de los héroes puede purificarlo antes del juicio final."]},
+            misionId:"mision_santuario_1"
         }
     },
 
@@ -135,7 +170,83 @@ const GAME_DATA = {
         sombra_eterna:     { nombre:"Sombra Eterna",        icono:"🌑", nivelBase:16, hp:280, atk:48, def:20, exp:450,  oro:300 },
         angel_caido:       { nombre:"Ángel Caído",          icono:"🪶", nivelBase:17, hp:320, atk:52, def:24, exp:550,  oro:380 },
         lich:              { nombre:"Liche Inmortal",       icono:"💀", nivelBase:18, hp:360, atk:55, def:22, exp:700,  oro:500 },
-        rey_oscuro:        { nombre:"Rey Oscuro",           icono:"👑", nivelBase:20, hp:600, atk:65, def:30, exp:2000, oro:1500 }
+        rey_oscuro:        { nombre:"Rey Oscuro",           icono:"👑", nivelBase:20, hp:600, atk:65, def:30, exp:2000, oro:1500 },
+        // Pantanos (5-7)
+        serpiente_venenosa: { nombre:"Serpiente Venenosa",   icono:"🐍", nivelBase:5,  hp:70,  atk:16, def:5,  exp:55,  oro:20 },
+        sapo_gigante:       { nombre:"Sapo Gigante",         icono:"🐸", nivelBase:5,  hp:90,  atk:12, def:8,  exp:50,  oro:18 },
+        bruja_pantano:      { nombre:"Bruja del Pantano",    icono:"🧙", nivelBase:6,  hp:65,  atk:22, def:5,  exp:75,  oro:35 },
+        muerto_ahogado:     { nombre:"Muerto Ahogado",       icono:"🧟", nivelBase:5,  hp:75,  atk:18, def:7,  exp:60,  oro:25 },
+        // Ruinas (6-8)
+        golem_antiguo:      { nombre:"Gólem Antiguo",        icono:"🗿", nivelBase:6,  hp:110, atk:18, def:16, exp:90,  oro:40 },
+        centinela_runa:     { nombre:"Centinela Rúnico",     icono:"🔯", nivelBase:7,  hp:95,  atk:20, def:12, exp:85,  oro:45 },
+        druida_oscuro:      { nombre:"Druida Oscuro",        icono:"🌑", nivelBase:6,  hp:75,  atk:24, def:6,  exp:80,  oro:42 },
+        bestia_ruinas:      { nombre:"Bestia de las Ruinas", icono:"🦎", nivelBase:7,  hp:130, atk:22, def:14, exp:100, oro:55 },
+        // Tundra (9-11)
+        lobo_hielo:         { nombre:"Lobo de Hielo",        icono:"🐺", nivelBase:9,  hp:140, atk:26, def:12, exp:140, oro:65 },
+        oso_glacial:        { nombre:"Oso Glacial",          icono:"🐻", nivelBase:10, hp:180, atk:28, def:16, exp:170, oro:80 },
+        elemental_hielo:    { nombre:"Elemental de Hielo",   icono:"❄",  nivelBase:9,  hp:130, atk:30, def:10, exp:155, oro:75 },
+        yeti:               { nombre:"Yeti",                 icono:"🦍", nivelBase:10, hp:200, atk:25, def:18, exp:180, oro:90 },
+        // Desierto (12-14)
+        escorpion_gigante:  { nombre:"Escorpión Gigante",    icono:"🦂", nivelBase:12, hp:190, atk:36, def:15, exp:260, oro:140 },
+        momia:              { nombre:"Momia Maldita",        icono:"🧟", nivelBase:13, hp:210, atk:32, def:20, exp:280, oro:150 },
+        elemental_arena:    { nombre:"Elemental de Arena",   icono:"🌪", nivelBase:12, hp:175, atk:40, def:12, exp:270, oro:145 },
+        serpiente_desierto: { nombre:"Serpiente del Desierto",icono:"🐍",nivelBase:13, hp:230, atk:38, def:14, exp:310, oro:170 },
+        // Santuario (14-16)
+        guardian_sagrado:   { nombre:"Guardián Sagrado",     icono:"🛡", nivelBase:14, hp:280, atk:44, def:22, exp:400, oro:250 },
+        angel_corrupto:     { nombre:"Ángel Corrupto",       icono:"🪶", nivelBase:15, hp:300, atk:48, def:20, exp:450, oro:300 },
+        demonio_luz:        { nombre:"Demonio de Luz",       icono:"😇", nivelBase:14, hp:260, atk:46, def:18, exp:420, oro:270 },
+        semidios_caido:     { nombre:"Semidiós Caído",       icono:"⚡", nivelBase:15, hp:350, atk:50, def:25, exp:500, oro:350 },
+        // Aldea extra
+        aldeano_zombie:     { nombre:"Aldeano Zombie",        icono:"🧟", nivelBase:1,  hp:22,  atk:7,  def:2,  exp:11,  oro:4  },
+        arquero_bandido:    { nombre:"Arquero Bandido",       icono:"🏹", nivelBase:2,  hp:30,  atk:9,  def:3,  exp:18,  oro:10 },
+        // Bosque extra
+        duende_bosque:      { nombre:"Duende del Bosque",     icono:"🧚", nivelBase:3,  hp:50,  atk:12, def:7,  exp:38,  oro:16 },
+        murcielago_gigante: { nombre:"Murciélago Gigante",    icono:"🦇", nivelBase:2,  hp:40,  atk:11, def:4,  exp:30,  oro:12 },
+        serpiente_bosque:   { nombre:"Serpiente del Bosque",  icono:"🐍", nivelBase:3,  hp:48,  atk:16, def:4,  exp:42,  oro:18 },
+        // Catacumbas extra
+        esqueleto_guerrero: { nombre:"Esqueleto Guerrero",    icono:"💀", nivelBase:4,  hp:60,  atk:16, def:10, exp:55,  oro:22 },
+        zombie_armado:      { nombre:"Zombie Armado",         icono:"🧟", nivelBase:4,  hp:70,  atk:14, def:9,  exp:50,  oro:20 },
+        espectro_oscuro:    { nombre:"Espectro Oscuro",       icono:"👻", nivelBase:5,  hp:65,  atk:22, def:5,  exp:72,  oro:32 },
+        // Minas extra
+        minero_maldito:     { nombre:"Minero Maldito",        icono:"⛏",  nivelBase:5,  hp:75,  atk:17, def:9,  exp:65,  oro:28 },
+        gusano_roca:        { nombre:"Gusano de Roca",        icono:"🪱", nivelBase:5,  hp:100, atk:14, def:12, exp:70,  oro:30 },
+        troll_minas:        { nombre:"Troll de las Minas",    icono:"👹", nivelBase:6,  hp:130, atk:19, def:13, exp:95,  oro:48 },
+        // Castillo extra
+        arquero_oscuro:     { nombre:"Arquero Oscuro",        icono:"🏹", nivelBase:8,  hp:130, atk:26, def:12, exp:150, oro:75 },
+        vampiro_noble:      { nombre:"Vampiro Noble",         icono:"🧛", nivelBase:9,  hp:145, atk:30, def:15, exp:170, oro:88 },
+        bestia_castillo:    { nombre:"Bestia del Castillo",   icono:"🦁", nivelBase:8,  hp:170, atk:24, def:17, exp:165, oro:82 },
+        // Torre extra
+        homunculus:         { nombre:"Homúnculo",             icono:"🤖", nivelBase:8,  hp:120, atk:28, def:10, exp:165, oro:85 },
+        elemental_caos:     { nombre:"Elemental del Caos",    icono:"🌀", nivelBase:10, hp:160, atk:34, def:12, exp:200, oro:105 },
+        familiar_mago:      { nombre:"Familiar del Mago",     icono:"🐱", nivelBase:8,  hp:100, atk:32, def:7,  exp:170, oro:88 },
+        // Volcán extra
+        serpiente_fuego:    { nombre:"Serpiente de Fuego",    icono:"🐍", nivelBase:11, hp:190, atk:36, def:16, exp:260, oro:135 },
+        titan_roca:         { nombre:"Titán de Roca",         icono:"🗿", nivelBase:12, hp:260, atk:42, def:22, exp:320, oro:170 },
+        guardian_volcan:    { nombre:"Guardián del Volcán",   icono:"😈", nivelBase:10, hp:170, atk:34, def:18, exp:240, oro:125 },
+        // Abismo extra
+        demonio_abismo:     { nombre:"Demonio del Abismo",    icono:"👿", nivelBase:16, hp:290, atk:50, def:22, exp:460, oro:310 },
+        vampiro_anciano:    { nombre:"Vampiro Anciano",       icono:"🧛", nivelBase:17, hp:310, atk:54, def:20, exp:520, oro:360 },
+        caos_encarnado:     { nombre:"Caos Encarnado",        icono:"🌑", nivelBase:18, hp:400, atk:58, def:26, exp:650, oro:450 },
+        // Pantanos extra
+        caiman_corrupto:    { nombre:"Caimán Corrupto",       icono:"🐊", nivelBase:6,  hp:95,  atk:19, def:10, exp:78,  oro:38 },
+        planta_carnivora:   { nombre:"Planta Carnívora",      icono:"🌱", nivelBase:5,  hp:80,  atk:15, def:9,  exp:62,  oro:28 },
+        fantasma_pantano:   { nombre:"Fantasma del Pantano",  icono:"👻", nivelBase:6,  hp:68,  atk:21, def:6,  exp:72,  oro:33 },
+        // Ruinas extra
+        guerrero_antiguo:   { nombre:"Guerrero Antiguo",      icono:"⚔",  nivelBase:7,  hp:115, atk:22, def:13, exp:95,  oro:50 },
+        sacerdote_runa:     { nombre:"Sacerdote Rúnico",      icono:"🔯", nivelBase:7,  hp:90,  atk:26, def:8,  exp:88,  oro:48 },
+        golem_arcano:       { nombre:"Gólem Arcano",          icono:"🤖", nivelBase:8,  hp:150, atk:24, def:18, exp:120, oro:62 },
+        // Tundra extra
+        tigre_siberiano:    { nombre:"Tigre Siberiano",       icono:"🐅", nivelBase:10, hp:160, atk:30, def:14, exp:165, oro:78 },
+        aguila_tormenta:    { nombre:"Águila de Tormenta",    icono:"🦅", nivelBase:9,  hp:120, atk:32, def:10, exp:150, oro:72 },
+        gigante_hielo:      { nombre:"Gigante de Hielo",      icono:"🧊", nivelBase:11, hp:230, atk:28, def:20, exp:200, oro:100 },
+        // Desierto extra
+        faraon_oscuro:      { nombre:"Faraón Oscuro",         icono:"👑", nivelBase:14, hp:260, atk:42, def:22, exp:340, oro:200 },
+        bestia_desierto:    { nombre:"Bestia del Desierto",   icono:"🦂", nivelBase:13, hp:220, atk:40, def:16, exp:310, oro:175 },
+        escarabajo_sagrado: { nombre:"Escarabajo Sagrado",    icono:"🪲", nivelBase:12, hp:180, atk:35, def:18, exp:265, oro:145 },
+        // Santuario extra
+        oraculo_corrompido: { nombre:"Oráculo Corrompido",    icono:"🔮", nivelBase:14, hp:250, atk:46, def:16, exp:410, oro:260 },
+        arquero_celestial:  { nombre:"Arquero Celestial",     icono:"🪶", nivelBase:15, hp:280, atk:50, def:18, exp:440, oro:290 },
+        titan_sagrado:      { nombre:"Titán Sagrado",         icono:"⚡", nivelBase:15, hp:380, atk:48, def:26, exp:520, oro:360 }
     },
 
     items: {
@@ -187,7 +298,12 @@ const GAME_DATA = {
         mision_castillo_1:   { nombre:"Recuperar el Trono",   descripcion:"Derrota 6 guardianes del castillo.",       objetivo:{tipo:"matar_enemigos",enemigos:["caballero_oscuro","mago_negro","guardian_castillo","manticora"],cantidad:6,actual:0}, recompensa:{exp:900,  oro:700,  item:"espada_acero"} },
         mision_torre_1:      { nombre:"La Torre Maldita",     descripcion:"Derrota 6 criaturas de la torre.",         objetivo:{tipo:"matar_enemigos",enemigos:["hidra","golem_magico","quimera","mago_negro"],          cantidad:6,actual:0}, recompensa:{exp:1100, oro:900,  item:"baston_maldito"} },
         mision_volcan_1:     { nombre:"El Dragón Eterno",     descripcion:"Derrota 4 criaturas del volcán.",          objetivo:{tipo:"matar_enemigos",enemigos:["demonio_fuego","elemental_lava","dragon_llamas","quimera"],  cantidad:4,actual:0}, recompensa:{exp:1600, oro:1300, item:"espada_llamas"} },
-        mision_abismo_1:     { nombre:"El Destino del Reino", descripcion:"Derrota al Rey Oscuro.",                   objetivo:{tipo:"matar_enemigos",enemigos:["rey_oscuro"],                               cantidad:1,actual:0}, recompensa:{exp:5000, oro:5000, item:"elixir_mayor"} }
+        mision_abismo_1:     { nombre:"El Destino del Reino", descripcion:"Derrota al Rey Oscuro.",                   objetivo:{tipo:"matar_enemigos",enemigos:["rey_oscuro"],                               cantidad:1,actual:0}, recompensa:{exp:5000, oro:5000, item:"elixir_mayor"} },
+        mision_pantanos_1:   { nombre:"Purgar el Pantano",    descripcion:"Elimina 6 criaturas del pantano.",          objetivo:{tipo:"matar_enemigos",enemigos:["serpiente_venenosa","sapo_gigante","bruja_pantano","muerto_ahogado"],    cantidad:6,actual:0}, recompensa:{exp:650,  oro:430,  item:"pocion_mp_mayor"} },
+        mision_ruinas_1:     { nombre:"Las Ruinas del Pasado",descripcion:"Derrota 7 guardianes de las ruinas.",        objetivo:{tipo:"matar_enemigos",enemigos:["golem_antiguo","centinela_runa","druida_oscuro","bestia_ruinas"],      cantidad:7,actual:0}, recompensa:{exp:800,  oro:580,  item:"hacha_batalla"} },
+        mision_tundra_1:     { nombre:"La Bestia del Frío",   descripcion:"Derrota 5 criaturas de la tundra.",          objetivo:{tipo:"matar_enemigos",enemigos:["lobo_hielo","oso_glacial","elemental_hielo","yeti"],                  cantidad:5,actual:0}, recompensa:{exp:1000, oro:750,  item:"espada_acero"} },
+        mision_desierto_1:   { nombre:"El Desierto Eterno",   descripcion:"Elimina 5 criaturas del desierto.",          objetivo:{tipo:"matar_enemigos",enemigos:["escorpion_gigante","momia","elemental_arena","serpiente_desierto"],    cantidad:5,actual:0}, recompensa:{exp:1400, oro:1100, item:"katana_sombra"} },
+        mision_santuario_1:  { nombre:"La Última Luz",        descripcion:"Derrota 5 guardianes del santuario.",        objetivo:{tipo:"matar_enemigos",enemigos:["guardian_sagrado","angel_corrupto","demonio_luz","semidios_caido"],   cantidad:5,actual:0}, recompensa:{exp:2500, oro:2000, item:"amuleto_dragon"} }
     },
 
     tiendaItems: ["pocion_hp","pocion_hp_mayor","pocion_hp_superior","pocion_mp","pocion_mp_mayor","elixir",

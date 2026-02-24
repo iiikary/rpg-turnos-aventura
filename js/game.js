@@ -520,7 +520,12 @@ function unlockZones() {
         'zone-castillo':   7,
         'zone-torre-mago': 8,
         'zone-volcan':     10,
-        'zone-abismo':     15
+        'zone-abismo':     15,
+        'zone-pantanos':   5,
+        'zone-ruinas':     6,
+        'zone-tundra':     9,
+        'zone-desierto':   12,
+        'zone-santuario':  14
     };
     document.querySelectorAll('.region').forEach(region => {
         const match = (region.getAttribute('onclick')||'').match(/enterZone\('(.+)'\)/);
