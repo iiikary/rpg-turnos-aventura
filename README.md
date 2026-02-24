@@ -12,9 +12,9 @@ Un RPG por turnos de fantasía medieval — jugable desde el navegador en móvil
 ## 🎮 Características
 
 - **6 clases de héroe**: Guerrero, Mago, Arquero, Paladín, Nigromante, Asesino
-- **Mundo abierto** con 6 zonas desbloqueables: Aldea → Bosque → Minas → Castillo → Volcán → Abismo
+- **Mundo abierto** con 13 zonas desbloqueables por nivel
 - **Combate por turnos** con 24 habilidades únicas, venenos, buffs, críticos y debuffs
-- **18 tipos de enemigos** con stats escalados por nivel, desde Rata Gigante hasta el Rey Oscuro
+- **57 tipos de enemigos** con stats escalados por nivel, desde Rata Gigante hasta el Rey Oscuro
 - **Sistema de misiones** con recompensas de EXP, oro e ítems únicos
 - **Progresión de personaje**: niveles 1–20 con stats que crecen según tu clase
 - **Inventario y equipamiento**: armas, armaduras, accesorios, pociones consumibles
@@ -62,14 +62,21 @@ rpg-turnos-aventura/
 
 ## 🗺️ Zonas del Mundo de Valdoria
 
-| Zona | Nivel Req. | Enemigos |
-|------|-----------|----------|
-| 🏘️ Aldea de Comienzo | 1 | Lobos, Goblins, Ratas Gigantes |
-| 🌲 Bosque Oscuro | 2 | Lobos de Sombra, Trolls del Árbol, Hadas Corrompidas |
-| ⛏️ Minas Malditas | 4 | Esqueletos Mineros, Golems de Piedra, Espectros |
-| 🏰 Castillo del Rey | 7 | Caballeros Oscuros, Magos Negros, Guardianes |
-| 🌋 Volcán Eterno | 10 | Demonios de Fuego, Elementales de Lava, Dragón de Llamas |
-| 🕳️ El Abismo Final | 15 | Sombras Eternas, Liche Inmortal, Rey Oscuro (boss final) |
+| Zona | Nivel Req. | Enemigos destacados |
+|------|-----------|---------------------|
+| 🏘️ Aldea de Comienzo | 1 | Lobos, Goblins, Ratas, Aldeanos Zombie |
+| 🌲 Bosque Oscuro | 2 | Lobos de Sombra, Trolls, Hadas Corrompidas, Duendes |
+| 🏛 Catacumbas Antiguas | 3 | Muertos Vivientes, Vampiros, Esqueletos Guerreros |
+| ⛏️ Minas Malditas | 4 | Golems de Piedra, Espectros, Gusanos de Roca, Trolls |
+| 🌿 Pantanos Malditos | 5 | Serpientes Venenosas, Brujas, Caimanes Corruptos |
+| 🏛️ Ruinas del Imperio | 6 | Golems Antiguos, Centinelas Rúnicos, Guerreros Antiguos |
+| 🏰 Castillo del Rey | 7 | Caballeros Oscuros, Vampiros Nobles, Bestias del Castillo |
+| 🗼 Torre del Mago | 8 | Hidras, Quimeras, Homúnculos, Elementales del Caos |
+| 🏔️ Tundra Glacial | 9 | Lobos de Hielo, Osos Glaciales, Yetis, Gigantes de Hielo |
+| 🌋 Volcán Eterno | 10 | Demonios de Fuego, Dragón de Llamas, Titanes de Roca |
+| 🏜️ Desierto de Cenizas | 12 | Escorpiones Gigantes, Momias, Faraones Oscuros |
+| ⛩️ Santuario Prohibido | 14 | Ángeles Corruptos, Titanes Sagrados, Semidioses Caídos |
+| 🕳️ El Abismo Final | 15 | Liches, Demonios del Abismo, Rey Oscuro (boss final) |
 
 ---
 
@@ -102,7 +109,7 @@ Toda la música y los efectos se generan **en tiempo real** con la Web Audio API
 Ataque, magia, bola de fuego, flecha, curación, drenar vida, veneno, golpe crítico, daño al jugador, daño al enemigo, victoria, derrota, subir de nivel, inicio de batalla, clic de menú, selección, notificación, huida, ítem recogido y buff.
 
 ### Panel de control de audio
-- Botón flotante 🎵 en esquina inferior izquierda
+- Botón flotante 🎵 en esquina superior derecha
 - Activar / desactivar música y efectos independientemente
 - Sliders de volumen para música y FX
 - Funciona con touch en iOS y Android
@@ -127,7 +134,8 @@ El juego está optimizado para jugarse en celular:
 |---------|---------|
 | v1.0 | Juego base: 6 clases, 6 zonas, 18 enemigos, combate por turnos, misiones, inventario, guardado |
 | v1.1 | Sistema de audio completo: música procedural + 22 efectos de sonido con Web Audio API |
-| v1.2 | Fix móvil: panel de audio corregido visualmente, audio activado por touch, compressor dinámico, bug hi-hat solucionado, sliders grandes para dedo |
+| v1.2 | Fix móvil: panel de audio corregido, audio activado por touch, compressor dinámico |
+| v1.3 | 5 zonas nuevas (Pantanos, Ruinas, Tundra, Desierto, Santuario) y 39 enemigos adicionales — 13 zonas y 57 enemigos en total |
 
 ---
 
